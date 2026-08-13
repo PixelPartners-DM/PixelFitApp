@@ -1,0 +1,115 @@
+﻿@page "/opret-bruger"
+
+@using PixelFit.Service
+@inject AuthService AuthService
+@inject NavigationManager Navigation
+
+<div class="opret-container">
+
+    <!-- PixelFit branding -->
+    <div class="logo-omraade">
+
+        <img src="images/PixelFitLogo.png"
+             alt="PixelFit Logo" />
+
+        <span>PIXELFIT</span>
+
+    </div>
+
+    <!-- Overskrift -->
+    <div class="overskrift">
+
+        <h1>Opret bruger</h1>
+
+        <p>
+            Opret din konto og kom i gang med PixelFit.
+        </p>
+
+    </div>
+
+    <!-- Formular -->
+    <div class="opret-form">
+
+        <div class="input-gruppe">
+            <label>Email</label>
+
+            <input type="email"
+                   @bind="email"
+                   placeholder="navn@email.dk" />
+        </div>
+
+        <div class="input-gruppe">
+            <label>Adgangskode</label>
+
+            <input type="password"
+                   @bind="password"
+                   placeholder="Indtast adgangskode" />
+        </div>
+
+        <div class="input-gruppe">
+            <label>Gentag adgangskode</label>
+
+            <input type="password"
+                   @bind="gentagPassword"
+                   placeholder="Gentag adgangskode" />
+        </div>
+
+        <button class="opret-knap" @onclick="Opret">
+            OPRET BRUGER
+        </button>
+
+        @if (!string.IsNullOrWhiteSpace(besked))
+        {
+            <p class="besked">@besked</p>
+        }
+
+    </div>
+
+    <!-- Link tilbage til login -->
+    <p class="login-link">
+        Har du allerede en konto?
+        <a href="/login">Log ind</a>
+    </p>
+
+</div>
+
+@code {
+    private string email = "";
+    private string password = "";
+    private string gentagPassword = "";
+    private string besked = "";
+
+    private async Task Opret()
+    {
+        // Tjekker om alle felter er udfyldt
+        if (string.IsNullOrWhiteSpace(email) ||
+            string.IsNullOrWhiteSpace(password) ||
+            string.IsNullOrWhiteSpace(gentagPassword))
+        {
+            besked = "Udfyld alle felter.";
+            return;
+        }
+
+        // Tjekker om adgangskoderne matcher
+        if (password != gentagPassword)
+        {
+            besked = "Adgangskoderne er ikke ens.";
+            return;
+        }
+
+        // Sender email og adgangskode til API'et
+        var success = await AuthService.RegisterAsync(email, password);
+
+        if (!success)
+        {
+            besked = "Brugeren kunne ikke oprettes.";
+            return;
+        }
+
+        // Hvis oprettelsen lykkes
+        besked = "Brugeren er oprettet.";
+
+        // Sender brugeren tilbage til login-siden
+        Navigation.NavigateTo("/login");
+    }
+}

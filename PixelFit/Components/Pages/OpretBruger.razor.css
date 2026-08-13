@@ -1,0 +1,193 @@
+/* Hele siden */
+.opret-side {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient( rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.78) ), url("/images/Vagte.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: auto;
+    /* Sørger for at siden ligger over MainLayout */
+    z-index: 9999;
+}
+
+
+/* Holder indholdet samlet */
+.opret-container {
+    width: 100%;
+    max-width: 420px;
+    padding: 30px 25px;
+    box-sizing: border-box;
+}
+
+
+/* Tilbage-link */
+.tilbage {
+    display: inline-block;
+    color: #aaa;
+    font-size: 14px;
+    text-decoration: none;
+    margin-bottom: 25px;
+}
+
+
+/* Logo og PixelFit navn */
+.logo-omraade {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 35px;
+}
+
+
+    /* Logo */
+    .logo-omraade img {
+        width: 55px;
+        height: 55px;
+        object-fit: contain;
+    }
+
+
+    /* PIXELFIT tekst */
+    .logo-omraade span {
+        color: white;
+        font-size: 22px;
+        font-weight: 900;
+        letter-spacing: 4px;
+    }
+
+
+/* Overskrift */
+.overskrift {
+    margin-bottom: 30px;
+}
+
+    .overskrift h1 {
+        margin: 0 0 8px 0;
+        color: white;
+        font-size: 34px;
+        font-weight: 800;
+    }
+
+    .overskrift p {
+        margin: 0;
+        color: #aaa;
+        font-size: 15px;
+    }
+
+
+/* Formular */
+.opret-form {
+    width: 100%;
+}
+
+
+/* Input-grupper */
+.input-gruppe {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+
+    /* Labels */
+    .input-gruppe label {
+        color: #d7d7d7;
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+
+    /* Inputfelter */
+    .input-gruppe input {
+        width: 100%;
+        padding: 16px 17px;
+        background: rgba(24, 24, 24, 0.95);
+        border: 1px solid #303030;
+        border-radius: 14px;
+        color: white;
+        font-size: 15px;
+        box-sizing: border-box;
+    }
+
+
+        /* Placeholder */
+        .input-gruppe input::placeholder {
+            color: #666;
+        }
+
+
+        /* Når et felt er valgt */
+        .input-gruppe input:focus {
+            outline: none;
+            border-color: #777;
+            background: #1d1d1d;
+        }
+
+
+/* Opret bruger-knappen */
+.opret-knap {
+    width: 100%;
+    padding: 16px;
+    margin-top: 5px;
+    background: white;
+    color: #111;
+    border: none;
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    cursor: pointer;
+}
+
+
+/* Fejl/status-besked */
+.besked {
+    margin-top: 15px;
+    text-align: center;
+    color: #bbb;
+    font-size: 14px;
+}
+
+
+/* Login-link nederst */
+.login-link {
+    margin-top: 30px;
+    text-align: center;
+    color: #888;
+    font-size: 14px;
+}
+
+
+    /* Selve Log ind-linket */
+    .login-link a {
+        color: white;
+        font-weight: 700;
+        text-decoration: none;
+        margin-left: 4px;
+    }
+
+
+.opret-side {
+    animation: pageIn 0.35s ease-out;
+}
+
+@keyframes pageIn {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}

@@ -1,0 +1,88 @@
+﻿@page "/"
+@page "/login"
+
+<div class="login-page">
+
+    <div class="login-container">
+
+        <div class="brand">
+
+            <img src="images/PixelFitLogo.png"
+                 class="brand-logo"
+                 alt="PixelFit Logo" />
+
+            <h1>PIXELFIT</h1>
+
+            <p>TRÆN. UDVIKL. GENTAG.</p>
+
+        </div>
+
+        <div class="login-form">
+
+            <div class="input-group">
+                <label>Email</label>
+
+                <input type="email"
+                       @bind="email"
+                       placeholder="navn@email.dk" />
+            </div>
+
+            <div class="input-group">
+                <label>Adgangskode</label>
+
+                <input type="password"
+                       @bind="password"
+                       placeholder="Indtast din adgangskode" />
+            </div>
+
+            <div class="forgot-password">
+                <a href="/forgot-password">
+                    Glemt adgangskode?
+                </a>
+            </div>
+
+            <button class="login-button" @onclick="Login">
+                LOG IND
+            </button>
+
+            @if (!string.IsNullOrWhiteSpace(message))
+            {
+                <p class="message">@message</p>
+            }
+
+            <div class="divider">
+                <span></span>
+                <p>ELLER</p>
+                <span></span>
+            </div>
+
+            <p class="register-text">
+                Har du ikke en konto?
+                <a href="/opret-bruger">Opret konto</a>
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+@code {
+
+    private string email = "";
+    private string password = "";
+    private string message = "";
+
+    private void Login()
+    {
+        if (string.IsNullOrWhiteSpace(email) ||
+            string.IsNullOrWhiteSpace(password))
+        {
+            message = "Udfyld email og adgangskode.";
+            return;
+        }
+
+        message = "Logger ind...";
+    }
+
+}

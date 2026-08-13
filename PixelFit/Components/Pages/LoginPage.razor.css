@@ -1,0 +1,215 @@
+﻿/* Hele login-siden og baggrundsbilledet */
+.login-page {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    /* Mørkt filter oven på baggrundsbilledet */
+    background: linear-gradient( rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.80) ), url("/images/GymBOy.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    /* Centrerer login-boksen på skærmen */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: auto;
+}
+
+
+/* Beholder login-indholdet i en passende bredde */
+.login-container {
+    width: 100%;
+    max-width: 420px;
+    padding: 30px 25px;
+    box-sizing: border-box;
+}
+
+
+/* Område med logo og PixelFit titel */
+.brand {
+    text-align: center;
+    margin-bottom: 45px;
+}
+
+
+/* PixelFit logo */
+.brand-logo {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto 15px auto;
+}
+
+
+/* PixelFit overskrift */
+.brand h1 {
+    margin: 0;
+    font-size: 42px;
+    font-weight: 900;
+    letter-spacing: 5px;
+    color: white;
+}
+
+
+/* Teksten under PixelFit */
+.brand p {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 500;
+    letter-spacing: 2px;
+    color: #9a9a9a;
+}
+
+
+/* Login formular */
+.login-form {
+    width: 100%;
+}
+
+
+/* Email og adgangskode grupper */
+.input-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+
+    /* Teksten over inputfelterne */
+    .input-group label {
+        color: #d7d7d7;
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+
+    /* Inputfelter til email og adgangskode */
+    .input-group input {
+        width: 100%;
+        padding: 16px 17px;
+        background: #181818;
+        border: 1px solid #303030;
+        border-radius: 14px;
+        color: white;
+        font-size: 15px;
+        box-sizing: border-box;
+    }
+
+
+        /* Placeholder-tekst inde i inputfelterne */
+        .input-group input::placeholder {
+            color: #666;
+        }
+
+
+        /* Ændrer inputfeltet når brugeren har fokus på det */
+        .input-group input:focus {
+            outline: none;
+            border-color: #777;
+            background: #1d1d1d;
+        }
+
+
+/* Placering af glemt adgangskode */
+.forgot-password {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: -5px;
+    margin-bottom: 25px;
+}
+
+
+    /* Design af glemt adgangskode link */
+    .forgot-password a {
+        color: #999;
+        font-size: 13px;
+        text-decoration: none;
+    }
+
+
+/* Log ind knappen */
+.login-button {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 14px;
+    background: white;
+    color: #111;
+    font-size: 15px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    cursor: pointer;
+}
+
+
+/* Besked til brugeren ved login */
+.message {
+    text-align: center;
+    color: #bbb;
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+
+/* Område omkring ELLER teksten */
+.divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 35px 0 25px;
+}
+
+
+    /* Streger på hver side af ELLER */
+    .divider span {
+        flex: 1;
+        height: 1px;
+        background: #292929;
+    }
+
+
+    /* ELLER teksten */
+    .divider p {
+        margin: 0;
+        color: #666;
+        font-size: 11px;
+        letter-spacing: 2px;
+    }
+
+
+/* Teksten til oprettelse af ny konto */
+.register-text {
+    text-align: center;
+    color: #777;
+    font-size: 14px;
+}
+
+
+    /* Opret konto link */
+    .register-text a {
+        color: white;
+        font-weight: 700;
+        text-decoration: none;
+        margin-left: 4px;
+    }
+
+
+.login-page {
+    animation: pageIn 0.35s ease-out;
+}
+
+@keyframes pageIn {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}

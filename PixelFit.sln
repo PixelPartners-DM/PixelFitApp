@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.37203.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PixelFit", "PixelFit\PixelFit.csproj", "{EBB24426-488D-452B-A0CC-08CD2C35662C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EBB24426-488D-452B-A0CC-08CD2C35662C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EBB24426-488D-452B-A0CC-08CD2C35662C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EBB24426-488D-452B-A0CC-08CD2C35662C}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{EBB24426-488D-452B-A0CC-08CD2C35662C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EBB24426-488D-452B-A0CC-08CD2C35662C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {18340109-0CEB-4B93-AE57-91D910748395}
+	EndGlobalSection
+EndGlobal

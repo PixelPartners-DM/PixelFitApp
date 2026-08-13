@@ -1,0 +1,70 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+	<PropertyGroup>
+
+		<!-- PixelFit bygges kun til Android lige nu -->
+		<TargetFrameworks>net8.0-android</TargetFrameworks>
+
+		<OutputType>Exe</OutputType>
+		<RootNamespace>PixelFit</RootNamespace>
+
+		<UseMaui>true</UseMaui>
+		<SingleProject>true</SingleProject>
+
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+
+		<!-- Blazor CSS -->
+		<EnableDefaultCssItems>false</EnableDefaultCssItems>
+
+		<!-- App navn -->
+		<ApplicationTitle>PixelFit</ApplicationTitle>
+
+		<!-- App ID -->
+		<ApplicationId>com.companyname.pixelfit</ApplicationId>
+
+		<!-- Version -->
+		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+		<ApplicationVersion>1</ApplicationVersion>
+
+		<!-- Minimum Android version -->
+		<SupportedOSPlatformVersion>24.0</SupportedOSPlatformVersion>
+
+	</PropertyGroup>
+
+
+	<ItemGroup>
+
+		<!-- App Icon -->
+		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
+
+		<!-- Splash Screen -->
+		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
+
+		<!-- Images -->
+		<MauiImage Include="Resources\Images\*" />
+
+		<MauiImage Update="Resources\Images\dotnet_bot.svg" BaseSize="168,208" />
+
+		<!-- Fonts -->
+		<MauiFont Include="Resources\Fonts\*" />
+
+		<!-- Raw Assets -->
+		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+
+	</ItemGroup>
+
+
+	<ItemGroup>
+
+		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
+
+		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
+
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="$(MauiVersion)" />
+
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.1" />
+
+	</ItemGroup>
+
+</Project>

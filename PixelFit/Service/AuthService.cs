@@ -1,16 +1,16 @@
-﻿// Giver adgang til at sende og modtage JSON via HttpClient
+﻿using PixelFit.Models.Auth;
 using System.Net.Http.Json;
 
 namespace PixelFit.Service
 {
-    // Service der står for kommunikationen mellem MAUI-appen
-    // og API'et i forbindelse med brugerhåndtering
+    // Service der håndterer kommunikationen mellem
+    // MAUI-appen og PixelFit API'et
     public class AuthService
     {
         // HttpClient bruges til at sende HTTP requests til API'et
         private readonly HttpClient _httpClient;
 
-        // Constructoren modtager HttpClient gennem Dependency Injection
+        // HttpClient bliver givet til servicen gennem Dependency Injection
         public AuthService(HttpClient httpClient)
         {
             _httpClient = httpClient;
@@ -22,34 +22,57 @@ namespace PixelFit.Service
             string email,
             string password)
         {
-            // Opretter det objekt som skal sendes til API'et
-            var user = new RegisterRequest
+            // Opretter de data som skal sendes til API'et
+            var request = new RegisterRequest
             {
                 Email = email,
                 Password = password
             };
 
-            // Sender et POST request med brugerdata som JSON
-            // til API'ets register endpoint
+            // Sender brugerdata som JSON til register endpointet
             var response = await _httpClient.PostAsJsonAsync(
-                "api/users/register",
-                user
+                "api/Users/register",
+                request
             );
 
-            // Returnerer true hvis API'et svarer med en succes-statuskode
-            // og false hvis oprettelsen mislykkes
+            // Returnerer true hvis brugeren blev oprettet
+            // og false hvis API'et returnerede en fejl
             return response.IsSuccessStatusCode;
         }
-    }
 
-    // Beskriver de oplysninger som MAUI-appen
-    // sender til API'et ved oprettelse af en bruger
-    public class RegisterRequest
-    {
-        // Brugerens email
-        public string Email { get; set; } = string.Empty;
 
-        // Brugerens adgangskode
-        public string Password { get; set; } = string.Empty;
+        // Sender email og adgangskode til API'et
+        // og returnerer et JWT-token hvis login lykkes
+        public async Task<string?> LoginAsync(
+            string email,
+            string password)
+        {
+            // Opretter login-data som skal sendes til API'et
+            var request = new LoginRequest
+            {
+                Email = email,
+                Password = password
+            };
+
+            // Sender login-data som JSON til login endpointet
+            var response = await _httpClient.PostAsJsonAsync(
+                "api/Auth/login",
+                request
+            );
+
+            // Hvis login mislykkes returneres null
+            if (!response.IsSuccessStatusCode)
+            {
+                return null;
+            }
+
+            // Læser JSON-svaret fra API'et
+            // og konverterer det til LoginResponse
+            var result = await response.Content
+                .ReadFromJsonAsync<LoginResponse>();
+
+            // Returnerer JWT-tokenet
+            return result?.Token;
+        }
     }
 }

@@ -30,7 +30,7 @@ namespace PixelFit
                 new HttpClient
                 {
                     BaseAddress = new Uri(
-                        "http://pixelwebsiteapi.duckdns.org:5000/"
+                        "https://pixelwebsiteapi.duckdns.org/"
                     )
                 });
 

@@ -14,6 +14,9 @@ namespace PixelFit.Service
         public AuthService(HttpClient httpClient)
         {
             _httpClient = httpClient;
+
+            // Bevis på HTTPS, tjek output i debug konsollen
+            Console.WriteLine("API BaseAddress: " + _httpClient.BaseAddress);
         }
 
         // Sender email og adgangskode til API'et

@@ -6,98 +6,108 @@
 @inject NavigationManager Navigation
 
 
-<div class="login-container">
+<!-- Hele login-siden.
+     Denne wrapper bruges blandt andet til baggrundsbilledet. -->
+<div class="login-page">
 
-    <!-- PixelFit branding -->
-    <div class="brand">
-
-        <!-- PixelFit logo -->
-        <img src="images/PixelFitLogo.png"
-             class="brand-logo"
-             alt="PixelFit Logo" />
-
-        <h1>PIXELFIT</h1>
-
-        <p>TRÆN. UDVIKL. GENTAG.</p>
-
-    </div>
+    <!-- Container til selve login-indholdet -->
+    <div class="login-container">
 
 
-    <!-- Login formular -->
-    <div class="login-form">
+        <!-- PixelFit branding -->
+        <div class="brand">
 
-        <!-- Email -->
-        <div class="input-group">
+            <img src="images/PixelFitLogo.png"
+                 class="brand-logo"
+                 alt="PixelFit Logo" />
 
-            <label>Email</label>
+            <h1>PIXELFIT</h1>
 
-            <input type="email"
-                   @bind="email"
-                   placeholder="navn@email.dk" />
+            <p>TRÆN. UDVIKL. GENTAG.</p>
 
         </div>
 
 
-        <!-- Adgangskode -->
-        <div class="input-group">
+        <!-- Login formular -->
+        <div class="login-form">
 
-            <label>Adgangskode</label>
 
-            <input type="password"
-                   @bind="password"
-                   placeholder="Indtast din adgangskode" />
+            <!-- Email -->
+            <div class="input-group">
+
+                <label>Email</label>
+
+                <input type="email"
+                       @bind="email"
+                       placeholder="navn@email.dk" />
+
+            </div>
+
+
+            <!-- Adgangskode -->
+            <div class="input-group">
+
+                <label>Adgangskode</label>
+
+                <input type="password"
+                       @bind="password"
+                       placeholder="Indtast din adgangskode" />
+
+            </div>
+
+
+            <!-- Glemt adgangskode -->
+            <div class="forgot-password">
+
+                <a href="/forgot-password">
+                    Glemt adgangskode?
+                </a>
+
+            </div>
+
+
+            <!-- Login knap -->
+            <button class="login-button"
+                    @onclick="Login">
+
+                LOG IND
+
+            </button>
+
+
+            <!-- Viser fejl eller statusbesked -->
+            @if (!string.IsNullOrWhiteSpace(message))
+            {
+                <p class="message">
+                    @message
+                </p>
+            }
+
+
+            <!-- Opdeling -->
+            <div class="divider">
+
+                <span></span>
+
+                <p>ELLER</p>
+
+                <span></span>
+
+            </div>
+
+
+            <!-- Link til opret bruger -->
+            <p class="register-text">
+
+                Har du ikke en konto?
+
+                <a href="/opret-bruger">
+                    Opret konto
+                </a>
+
+            </p>
 
         </div>
-
-
-        <!-- Glemt adgangskode -->
-        <div class="forgot-password">
-
-            <a href="/forgot-password">
-                Glemt adgangskode?
-            </a>
-
-        </div>
-
-
-        <!-- Login knap -->
-        <button class="login-button"
-                @onclick="Login">
-
-            LOG IND
-
-        </button>
-
-
-        <!-- Viser fejlbesked hvis login fejler -->
-        @if (!string.IsNullOrWhiteSpace(message))
-        {
-            <p class="message">@message</p>
-        }
-
-
-        <!-- Opdeling mellem login og opret bruger -->
-        <div class="divider">
-
-            <span></span>
-
-            <p>ELLER</p>
-
-            <span></span>
-
-        </div>
-
-
-        <!-- Link til opret bruger -->
-        <p class="register-text">
-
-            Har du ikke en konto?
-
-            <a href="/opret-bruger">
-                Opret konto
-            </a>
-
-        </p>
 
     </div>
 
@@ -106,20 +116,24 @@
 
 @code {
 
-    // Gemmer det brugeren skriver i email-feltet
+    // Gemmer brugerens email
     private string email = "";
 
-    // Gemmer det brugeren skriver i password-feltet
+    // Gemmer brugerens adgangskode
     private string password = "";
 
-    // Bruges til at vise fejlbeskeder på siden
+    // Bruges til fejl og statusbeskeder
     private string message = "";
 
 
     // Bliver kørt når brugeren trykker LOG IND
     private async Task Login()
     {
-        // Kontrollerer at begge felter er udfyldt
+        // Fjerner tidligere beskeder
+        message = "";
+
+
+        // Tjekker om email og adgangskode er udfyldt
         if (string.IsNullOrWhiteSpace(email) ||
             string.IsNullOrWhiteSpace(password))
         {
@@ -128,32 +142,53 @@
         }
 
 
-        // Sender email og adgangskode til AuthService
-        // AuthService sender derefter oplysningerne til API'et
-        var token = await AuthService.LoginAsync(
-            email,
-            password
-        );
+        // Viser at login er i gang
+        message = "Logger ind...";
 
 
-        // Hvis API'et ikke returnerer et JWT-token,
-        // er login mislykket
-        if (string.IsNullOrWhiteSpace(token))
+        try
         {
-            message = "Forkert email eller adgangskode.";
-            return;
+            // Sender email og adgangskode til AuthService.
+            // Hvis login lykkes får vi JWT-token tilbage.
+            var token = await AuthService.LoginAsync(
+                email,
+                password
+            );
+
+
+            // DEBUG:
+            // Viser JWT-token i Visual Studio Output.
+            // Skal fjernes igen når vi er færdige med at teste.
+            Console.WriteLine($"JWT TOKEN: {token}");
+
+
+            // Hvis vi ikke får et token tilbage,
+            // er login mislykket.
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                message = "Forkert email eller adgangskode.";
+                return;
+            }
+
+
+            // Gemmer JWT-token sikkert på enheden.
+            // Tokenet skal senere bruges når vi kalder
+            // beskyttede endpoints i API'et.
+            await SecureStorage.Default.SetAsync(
+                "auth_token",
+                token
+            );
+
+
+            // Sender den loggede bruger videre
+            // til profilsiden.
+            Navigation.NavigateTo("/my-profil");
         }
-
-
-        // Gemmer JWT-token sikkert på enheden
-        // Tokenet bruges senere til beskyttede API-kald
-        await SecureStorage.Default.SetAsync(
-            "auth_token",
-            token
-        );
-
-
-        // Sender brugeren videre efter korrekt login
-        Navigation.NavigateTo("/home");
+        catch (Exception)
+        {
+            // Brugeren får en almindelig fejlbesked.
+            // Vi viser ikke tekniske systemoplysninger.
+            message = "Der opstod en fejl under login. Prøv igen.";
+        }
     }
 }

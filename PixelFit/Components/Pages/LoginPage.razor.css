@@ -199,7 +199,7 @@
 
 
 .login-page {
-    animation: pageIn 0.35s ease-out;
+    animation: pageIn 0.69s ease-out;
 }
 
 @keyframes pageIn {

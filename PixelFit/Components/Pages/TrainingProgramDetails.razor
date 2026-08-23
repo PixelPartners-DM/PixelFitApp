@@ -1,0 +1,607 @@
+﻿@page "/training-program/{Id:int}"
+
+@using PixelFit.Models.Training
+@using System.Net.Http.Headers
+@using System.Net.Http.Json
+
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
+
+<div class="program-details-page">
+
+    <div class="program-details-overlay"></div>
+
+    <div class="program-details-content @(isLeaving ? "page-leaving" : "")">
+
+        <!-- TOPBAR -->
+        <div class="details-topbar">
+
+            <button class="back-button"
+                    @onclick="GoBack">
+                ‹
+            </button>
+
+            <div class="brand-header">
+
+                <img src="images/PixelFitLogo.png"
+                     alt="PixelFit Logo"
+                     class="brand-logo" />
+
+                <span>PIXELFIT</span>
+
+            </div>
+
+        </div>
+
+
+        <!-- HEADER -->
+        <div class="details-header">
+
+            <p class="eyebrow">
+                DIT PROGRAM
+            </p>
+
+            <h1>
+                @programName
+            </h1>
+
+            <p class="subtitle">
+                Se hele dit program eller vælg en dag for at redigere den.
+            </p>
+
+        </div>
+
+
+        @if (loading)
+        {
+            <div class="loader-wrapper">
+
+                <div class="loader"></div>
+
+                <p>
+                    Henter program...
+                </p>
+
+            </div>
+        }
+        else if (!string.IsNullOrWhiteSpace(message))
+        {
+            <p class="status-message">
+                @message
+            </p>
+        }
+        else
+        {
+            <div class="section-title">
+                TRÆNINGSDAGE
+            </div>
+
+
+            @if (daysWithExercises.Count == 0)
+            {
+                <div class="empty-state">
+
+                    <h2>
+                        Ingen træningsdage
+                    </h2>
+
+                    <p>
+                        Der er endnu ikke valgt nogen dage til dette program.
+                    </p>
+
+                </div>
+            }
+            else
+            {
+                <div class="program-days">
+
+                    @foreach (var day in daysWithExercises)
+                    {
+                        <div class="program-day-block">
+
+                            <!-- DAG HEADER -->
+                            <button class="training-day-card"
+                                    @onclick="() => OpenTrainingDay(day.Id)">
+
+                                <div class="day-icon">
+                                    📅
+                                </div>
+
+                                <div class="day-info">
+
+                                    <h2>
+                                        @day.DayName
+                                    </h2>
+
+                                    <p>
+                                        Tryk for at redigere dagen
+                                    </p>
+
+                                </div>
+
+                                <span class="arrow">
+                                    ›
+                                </span>
+
+                            </button>
+
+
+                            <!-- ØVELSER -->
+                            @if (day.Exercises.Count == 0)
+                            {
+                                <div class="day-empty">
+                                    Ingen øvelser valgt endnu.
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="day-exercise-list">
+
+                                    @foreach (var exercise in day.Exercises)
+                                    {
+                                        <div class="program-exercise-card">
+
+                                            <img src="@exercise.ImageUrl"
+                                                 alt="@exercise.ExerciseName"
+                                                 class="program-exercise-image" />
+
+
+                                            <div class="program-exercise-info">
+
+                                                <h3>
+                                                    @exercise.ExerciseName
+                                                </h3>
+
+                                                @if (exercise.Sets.Count == 0)
+                                                {
+                                                    <p>
+                                                        Ingen sæt tilføjet endnu
+                                                    </p>
+                                                }
+                                                else
+                                                {
+                                                    <div class="set-list">
+
+                                                        @foreach (var set in exercise.Sets)
+                                                        {
+                                                            <div class="set-row">
+
+                                                                <span>
+                                                                    @set.Reps reps
+                                                                </span>
+
+                                                                <span>
+                                                                    @set.Weight kg
+                                                                </span>
+
+                                                                <span>
+                                                                    @set.RestBetweenSets sek
+                                                                </span>
+
+                                                            </div>
+                                                        }
+
+                                                    </div>
+                                                }
+
+                                            </div>
+
+                                        </div>
+                                    }
+
+                                </div>
+                            }
+
+                        </div>
+                    }
+
+                </div>
+            }
+
+
+            <!-- SLET PROGRAM -->
+            <div class="delete-section">
+
+                @if (!showDeleteConfirm)
+                {
+                    <button class="delete-program-button"
+                            @onclick="ShowDeleteConfirm">
+
+                        SLET PROGRAM
+
+                    </button>
+                }
+                else
+                {
+                    <div class="delete-confirm">
+
+                        <p>
+                            Er du sikker på, at du vil slette
+                            <strong>@programName</strong>?
+                        </p>
+
+                        <div class="delete-actions">
+
+                            <button class="cancel-delete-button"
+                                    @onclick="CancelDelete">
+
+                                ANNULLER
+
+                            </button>
+
+                            <button class="confirm-delete-button"
+                                    disabled="@isDeleting"
+                                    @onclick="DeleteProgram">
+
+                                @(isDeleting
+                                                        ? "SLETTER..."
+                                                        : "JA, SLET")
+
+                    </button>
+
+                        </div>
+
+                    </div>
+                        }
+
+            </div>
+        }
+
+    </div>
+
+</div>
+
+
+@code
+{
+    [Parameter]
+    public int Id { get; set; }
+
+
+    private string programName =
+        "Træningsprogram";
+
+
+    private List<ProgramDayViewModel> daysWithExercises =
+        new();
+
+
+    private bool loading = true;
+
+    private bool isLeaving = false;
+
+    private bool showDeleteConfirm = false;
+
+    private bool isDeleting = false;
+
+
+    private string message = "";
+
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadProgram();
+    }
+
+
+
+
+    private async Task LoadProgram()
+    {
+        loading = true;
+
+        message = "";
+
+        try
+        {
+            var token =
+                await SecureStorage.Default.GetAsync(
+                    "auth_token"
+                );
+
+
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                Navigation.NavigateTo(
+                    "/login"
+                );
+
+                return;
+            }
+
+
+            Http.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue(
+                    "Bearer",
+                    token
+                );
+
+
+            // HENTER PROGRAMMER
+            var programs =
+                await Http.GetFromJsonAsync<
+                    List<TrainingProgramResponse>>(
+                        "api/TrainingPrograms"
+                    );
+
+
+            var program =
+                programs?
+                    .FirstOrDefault(
+                        p => p.Id == Id
+                    );
+
+
+            if (program == null)
+            {
+                message =
+                    "Træningsprogrammet blev ikke fundet.";
+
+                return;
+            }
+
+
+            programName =
+                program.Name;
+
+
+            // HENTER DAGE
+            var days =
+                await Http.GetFromJsonAsync<
+                    List<TrainingDayResponse>>(
+                        $"api/TrainingDays/program/{Id}"
+                    )
+                ??
+                new List<TrainingDayResponse>();
+
+
+            var result =
+                new List<ProgramDayViewModel>();
+
+
+            foreach (var day in days)
+            {
+                var dayViewModel =
+                    new ProgramDayViewModel
+                    {
+                        Id =
+                            day.Id,
+
+                        DayName =
+                            day.DayName
+                    };
+
+
+                // HENTER ØVELSER TIL DAGEN
+                var exercises =
+                    await Http.GetFromJsonAsync<
+                        List<TrainingDayExerciseResponse>>(
+                            $"api/TrainingDayExercises/day/{day.Id}"
+                        )
+                    ??
+                    new List<TrainingDayExerciseResponse>();
+
+
+                foreach (var exercise in exercises)
+                {
+                    var exerciseViewModel =
+                        new ProgramExerciseViewModel
+                        {
+                            Id =
+                                exercise.Id,
+
+                            ExerciseName =
+                                exercise.ExerciseName,
+
+                            ImageUrl =
+                                exercise.ImageUrl,
+
+                            Order =
+                                exercise.Order
+                        };
+
+
+                    // HENTER SÆT TIL ØVELSEN
+                    var sets =
+                        await Http.GetFromJsonAsync<
+                            List<ExerciseSetResponse>>(
+                                $"api/ExerciseSets/exercise/{exercise.Id}"
+                            )
+                        ??
+                        new List<ExerciseSetResponse>();
+
+
+                    exerciseViewModel.Sets =
+                        sets;
+
+
+                    dayViewModel.Exercises.Add(
+                        exerciseViewModel
+                    );
+                }
+
+
+                result.Add(
+                    dayViewModel
+                );
+            }
+
+
+            daysWithExercises =
+                result;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+
+            message =
+                "Kunne ikke hente træningsprogrammet.";
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+
+
+    private void OpenTrainingDay(
+        int trainingDayId)
+    {
+        Navigation.NavigateTo(
+            $"/training-day/{trainingDayId}"
+        );
+    }
+
+
+
+    private async Task GoBack()
+    {
+        if (isLeaving)
+        {
+            return;
+        }
+
+
+        isLeaving = true;
+
+
+        await Task.Delay(300);
+
+
+        Navigation.NavigateTo(
+            "/traeningsprogrammer"
+        );
+    }
+
+
+
+    private void ShowDeleteConfirm()
+    {
+        showDeleteConfirm = true;
+    }
+
+
+    private void CancelDelete()
+    {
+        showDeleteConfirm = false;
+    }
+
+
+
+    private async Task DeleteProgram()
+    {
+        if (isDeleting)
+        {
+            return;
+        }
+
+
+        try
+        {
+            isDeleting = true;
+
+            message = "";
+
+
+            var token =
+                await SecureStorage.Default.GetAsync(
+                    "auth_token"
+                );
+
+
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                Navigation.NavigateTo(
+                    "/login"
+                );
+
+                return;
+            }
+
+
+            Http.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue(
+                    "Bearer",
+                    token
+                );
+
+
+            var response =
+                await Http.DeleteAsync(
+                    $"api/TrainingPrograms/{Id}"
+                );
+
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error =
+                    await response.Content
+                        .ReadAsStringAsync();
+
+
+                Console.WriteLine(error);
+
+
+                message =
+                    "Programmet kunne ikke slettes.";
+
+                return;
+            }
+
+
+            // Lille exit-animation
+            isLeaving = true;
+
+
+            await Task.Delay(300);
+
+
+            Navigation.NavigateTo(
+                "/traeningsprogrammer"
+            );
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+
+            message =
+                "Der opstod en fejl under sletningen.";
+        }
+        finally
+        {
+            isDeleting = false;
+        }
+    }
+
+
+
+    private class ProgramDayViewModel
+    {
+        public int Id { get; set; }
+
+        public string DayName { get; set; } =
+            string.Empty;
+
+        public List<ProgramExerciseViewModel> Exercises { get; set; } =
+            new();
+    }
+
+
+    private class ProgramExerciseViewModel
+    {
+        public int Id { get; set; }
+
+        public string ExerciseName { get; set; } =
+            string.Empty;
+
+        public string ImageUrl { get; set; } =
+            string.Empty;
+
+        public int Order { get; set; }
+
+        public List<ExerciseSetResponse> Sets { get; set; } =
+            new();
+    }
+}

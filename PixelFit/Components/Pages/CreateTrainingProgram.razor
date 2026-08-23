@@ -1,0 +1,305 @@
+﻿@page "/opret-traeningsprogram"
+@using PixelFit.Models.Training
+@using System.Net.Http.Headers
+@using System.Net.Http.Json
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
+
+<div class="create-program-page">
+
+    <div class="create-program-overlay"></div>
+
+    <div class="create-program-content @(isLeaving ? "page-leaving" : "")">
+
+        <!-- Topbar -->
+        <div class="create-topbar">
+
+            <button class="back-button"
+                    @onclick="GoBack">
+                ‹
+            </button>
+
+            <div class="brand-header">
+
+                <img src="images/PixelFitLogo.png"
+                     alt="PixelFit Logo"
+                     class="brand-logo" />
+
+                <span>PIXELFIT</span>
+
+            </div>
+
+        </div>
+
+
+        <!-- Header -->
+        <div class="create-header">
+
+            <p class="eyebrow">
+                NYT PROGRAM
+            </p>
+
+            <h1>
+                Opret træningsprogram
+            </h1>
+
+            <p class="subtitle">
+                Giv programmet et navn og vælg hvilke dage du vil træne.
+            </p>
+
+        </div>
+
+
+        <!-- Programnavn -->
+        <div class="form-card">
+
+            <label>
+                Programnavn
+            </label>
+
+            <input type="text"
+                   @bind="programName"
+                   placeholder="Fx. Push Pull Legs" />
+
+        </div>
+
+
+        <!-- Dage -->
+        <div class="days-section">
+
+            <p class="section-title">
+                VÆLG TRÆNINGSDAGE
+            </p>
+
+            <div class="days-grid">
+
+                @foreach (var day in availableDays)
+                {
+                    <button class="day-button @(selectedDays.Contains(day) ? "selected" : "")"
+                            @onclick="() => ToggleDay(day)">
+
+                        <span class="day-check">
+                            @(selectedDays.Contains(day) ? "✓" : "")
+                        </span>
+
+                        <span>
+                            @day
+                        </span>
+
+                    </button>
+                }
+
+            </div>
+
+        </div>
+
+
+        <!-- Status -->
+        @if (!string.IsNullOrWhiteSpace(message))
+        {
+            <p class="status-message">
+                @message
+            </p>
+        }
+
+
+        <!-- Gem -->
+        <button class="save-button"
+                disabled="@isSaving"
+                @onclick="CreateProgram">
+
+            @if (isSaving)
+            {
+                <span>
+                    GEMMER...
+                </span>
+            }
+            else
+            {
+                <span>
+                    OPRET PROGRAM
+                </span>
+            }
+
+        </button>
+
+    </div>
+
+</div>
+
+
+@code
+{
+    private string programName = "";
+
+    private string message = "";
+
+    private bool isSaving = false;
+
+    private bool isLeaving = false;
+
+
+    private readonly List<string> availableDays = new()
+    {
+        "Mandag",
+        "Tirsdag",
+        "Onsdag",
+        "Torsdag",
+        "Fredag",
+        "Loerdag",
+        "Soendag"
+    };
+
+
+    private readonly List<string> selectedDays = new();
+
+
+    private void ToggleDay(string day)
+    {
+        if (selectedDays.Contains(day))
+        {
+            selectedDays.Remove(day);
+        }
+        else
+        {
+            selectedDays.Add(day);
+        }
+    }
+
+
+    private async Task CreateProgram()
+    {
+        message = "";
+
+
+        if (string.IsNullOrWhiteSpace(programName))
+        {
+            message = "Skriv et navn til træningsprogrammet.";
+            return;
+        }
+
+
+        if (selectedDays.Count == 0)
+        {
+            message = "Vælg mindst én træningsdag.";
+            return;
+        }
+
+
+        try
+        {
+            isSaving = true;
+
+
+            var token =
+                await SecureStorage.Default.GetAsync(
+                    "auth_token"
+                );
+
+
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                Navigation.NavigateTo("/login");
+                return;
+            }
+
+
+            Http.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue(
+                    "Bearer",
+                    token
+                );
+
+
+
+            var programResponse =
+                await Http.PostAsJsonAsync(
+                    "api/TrainingPrograms",
+                    new
+                    {
+                        Name = programName
+                    }
+                );
+
+
+            if (!programResponse.IsSuccessStatusCode)
+            {
+                message =
+                    "Programmet kunne ikke oprettes.";
+
+                return;
+            }
+
+
+            var createdProgram =
+                await programResponse.Content
+                    .ReadFromJsonAsync<TrainingProgramResponse>();
+
+
+            if (createdProgram == null)
+            {
+                message =
+                    "Der opstod en fejl ved oprettelsen.";
+
+                return;
+            }
+
+
+
+            foreach (var day in selectedDays)
+            {
+                var dayResponse =
+                    await Http.PostAsJsonAsync(
+                        "api/TrainingDays",
+                        new
+                        {
+                            TrainingProgramId =
+                                createdProgram.Id,
+
+                            DayName =
+                                day
+                        }
+                    );
+
+
+                if (!dayResponse.IsSuccessStatusCode)
+                {
+                    message =
+                        "Programmet blev oprettet, men nogle træningsdage kunne ikke gemmes.";
+
+                    return;
+                }
+            }
+
+
+            Navigation.NavigateTo(
+                $"/training-program/{createdProgram.Id}"
+            );
+        }
+        catch
+        {
+            message =
+                "Der opstod en fejl. Prøv igen.";
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+
+    private async Task GoBack()
+    {
+        isLeaving = true;
+
+        await Task.Delay(300);
+
+        Navigation.NavigateTo(
+            "/traeningsprogrammer"
+        );
+    }
+
+
+    }
+}

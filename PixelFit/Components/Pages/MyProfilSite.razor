@@ -21,9 +21,13 @@
         <!-- Velkomstområde -->
         <div class="profil-overskrift">
 
-            <p class="overtekst">MIN PROFIL</p>
+            <p class="overtekst">
+                MIN PROFIL
+            </p>
 
-            <h1>Velkommen tilbage</h1>
+            <h1>
+                Velkommen tilbage
+            </h1>
 
             <p>
                 Hold styr på din træning, kost og udvikling.
@@ -38,11 +42,17 @@
             <!-- Dagens træning -->
             <div class="oversigt-kort">
 
-                <span class="kort-ikon">🏋️</span>
+                <span class="kort-ikon">
+                    🏋️
+                </span>
 
-                <p>DAGENS TRÆNING</p>
+                <p>
+                    DAGENS TRÆNING
+                </p>
 
-                <h2>Ingen træning</h2>
+                <h2>
+                    Ingen træning
+                </h2>
 
                 <span class="kort-info">
                     Ingen planlagt endnu
@@ -54,11 +64,17 @@
             <!-- Kalorier -->
             <div class="oversigt-kort">
 
-                <span class="kort-ikon">🔥</span>
+                <span class="kort-ikon">
+                    🔥
+                </span>
 
-                <p>KALORIER I DAG</p>
+                <p>
+                    KALORIER I DAG
+                </p>
 
-                <h2>0 kcal</h2>
+                <h2>
+                    0 kcal
+                </h2>
 
                 <span class="kort-info">
                     Intet registreret
@@ -70,7 +86,7 @@
 
 
         <!-- Træningssektion -->
-        <div class="menu-sektion">
+        <div class="menu-sektion training-section">
 
             <p class="sektion-titel">
                 TRÆNING
@@ -82,19 +98,27 @@
 
                 <div class="menu-venstre">
 
-                    <span class="menu-ikon">🏋️</span>
+                    <span class="menu-ikon">
+                        🏋️
+                    </span>
 
                     <div>
-                        <h3>Træningsprogrammer</h3>
+
+                        <h3>
+                            Træningsprogrammer
+                        </h3>
 
                         <p>
                             Opret og administrer dine programmer
                         </p>
+
                     </div>
 
                 </div>
 
-                <span class="pil">›</span>
+                <span class="pil">
+                    ›
+                </span>
 
             </button>
 
@@ -102,7 +126,7 @@
 
 
         <!-- Kost og udvikling -->
-        <div class="menu-sektion">
+        <div class="menu-sektion development-section">
 
             <p class="sektion-titel">
                 KOST & UDVIKLING
@@ -115,19 +139,27 @@
 
                 <div class="menu-venstre">
 
-                    <span class="menu-ikon">🔥</span>
+                    <span class="menu-ikon">
+                        🔥
+                    </span>
 
                     <div>
-                        <h3>Kalorier</h3>
+
+                        <h3>
+                            Kalorier
+                        </h3>
 
                         <p>
                             Beregn dit daglige kaloriebehov
                         </p>
+
                     </div>
 
                 </div>
 
-                <span class="pil">›</span>
+                <span class="pil">
+                    ›
+                </span>
 
             </button>
 
@@ -138,19 +170,27 @@
 
                 <div class="menu-venstre">
 
-                    <span class="menu-ikon">🥗</span>
+                    <span class="menu-ikon">
+                        🥗
+                    </span>
 
                     <div>
-                        <h3>Kost</h3>
+
+                        <h3>
+                            Kost
+                        </h3>
 
                         <p>
                             Registrer dine måltider
                         </p>
+
                     </div>
 
                 </div>
 
-                <span class="pil">›</span>
+                <span class="pil">
+                    ›
+                </span>
 
             </button>
 
@@ -161,19 +201,27 @@
 
                 <div class="menu-venstre">
 
-                    <span class="menu-ikon">⚖️</span>
+                    <span class="menu-ikon">
+                        ⚖️
+                    </span>
 
                     <div>
-                        <h3>Vægt</h3>
+
+                        <h3>
+                            Vægt
+                        </h3>
 
                         <p>
                             Følg din vægtudvikling
                         </p>
+
                     </div>
 
                 </div>
 
-                <span class="pil">›</span>
+                <span class="pil">
+                    ›
+                </span>
 
             </button>
 
@@ -184,19 +232,27 @@
 
                 <div class="menu-venstre">
 
-                    <span class="menu-ikon">📊</span>
+                    <span class="menu-ikon">
+                        📊
+                    </span>
 
                     <div>
-                        <h3>Statistik</h3>
+
+                        <h3>
+                            Statistik
+                        </h3>
 
                         <p>
                             Se din udvikling over tid
                         </p>
+
                     </div>
 
                 </div>
 
-                <span class="pil">›</span>
+                <span class="pil">
+                    ›
+                </span>
 
             </button>
 
@@ -221,35 +277,45 @@
     // Sender brugeren til træningsprogrammer
     private void GaaTilTraeningsprogrammer()
     {
-        Navigation.NavigateTo("/traeningsprogrammer");
+        Navigation.NavigateTo(
+            "/traeningsprogrammer"
+        );
     }
 
 
     // Sender brugeren til kalorier
     private void GaaTilKalorier()
     {
-        Navigation.NavigateTo("/kalorier");
+        Navigation.NavigateTo(
+            "/kalorier"
+        );
     }
 
 
     // Sender brugeren til kost
     private void GaaTilKost()
     {
-        Navigation.NavigateTo("/kost");
+        Navigation.NavigateTo(
+            "/kost"
+        );
     }
 
 
     // Sender brugeren til vægt
     private void GaaTilVaegt()
     {
-        Navigation.NavigateTo("/vaegt");
+        Navigation.NavigateTo(
+            "/vaegt"
+        );
     }
 
 
     // Sender brugeren til statistik
     private void GaaTilStatistik()
     {
-        Navigation.NavigateTo("/statistik");
+        Navigation.NavigateTo(
+            "/statistik"
+        );
     }
 
 
@@ -257,9 +323,13 @@
     private void LogUd()
     {
         // Fjerner JWT-tokenet fra SecureStorage
-        SecureStorage.Default.Remove("auth_token");
+        SecureStorage.Default.Remove(
+            "auth_token"
+        );
 
         // Sender brugeren tilbage til login
-        Navigation.NavigateTo("/login");
+        Navigation.NavigateTo(
+            "/login"
+        );
     }
 }

@@ -1,0 +1,372 @@
+﻿@page "/training-day/{Id:int}"
+
+@using PixelFit.Models.Training
+@using System.Net.Http.Headers
+@using System.Net.Http.Json
+
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
+
+<div class="training-day-page">
+
+    <div class="training-day-overlay"></div>
+
+    <div class="training-day-content @(isLeaving ? "page-leaving" : "")">
+
+        <!-- TOPBAR -->
+        <div class="day-topbar">
+
+            <button class="back-button"
+                    @onclick="GoBack">
+                ‹
+            </button>
+
+            <div class="brand-header">
+
+                <img src="images/PixelFitLogo.png"
+                     alt="PixelFit Logo"
+                     class="brand-logo" />
+
+                <span>PIXELFIT</span>
+
+            </div>
+
+        </div>
+
+
+        <!-- HEADER -->
+        <div class="day-header">
+
+            <p class="eyebrow">
+                TRÆNINGSDAG
+            </p>
+
+            <h1>
+                @dayName
+            </h1>
+
+            <p class="subtitle">
+                Administrer dagens øvelser og indstil dine sæt.
+            </p>
+
+        </div>
+
+
+        @if (loading)
+        {
+            <div class="loader-wrapper">
+
+                <div class="loader"></div>
+
+                <p>
+                    Henter træningsdag...
+                </p>
+
+            </div>
+        }
+        else if (!string.IsNullOrWhiteSpace(message))
+        {
+            <p class="status-message">
+                @message
+            </p>
+        }
+        else
+        {
+            <!-- =================================================
+                 VALGTE ØVELSER
+            ================================================== -->
+
+            <div class="selected-section">
+
+                <div class="section-title">
+                    VALGTE ØVELSER
+                </div>
+
+
+                @if (selectedExercises.Count == 0)
+                {
+                    <div class="empty-state">
+
+                        <p>
+                            Du har endnu ikke tilføjet nogen øvelser.
+                        </p>
+
+                    </div>
+                }
+                else
+                {
+                    <div class="exercise-list">
+
+                        @foreach (var exercise in selectedExercises)
+                        {
+                            <button class="exercise-card"
+                                    @onclick="() => OpenExerciseSetup(exercise.Id)">
+
+                                <img src="@exercise.ImageUrl"
+                                     alt="@exercise.ExerciseName"
+                                     class="exercise-image" />
+
+                                <div class="exercise-info">
+
+                                    <h2>
+                                        @exercise.ExerciseName
+                                    </h2>
+
+                                    <p>
+                                        Rækkefølge @exercise.Order
+                                    </p>
+
+                                    <span class="setup-hint">
+                                        Indstil sæt, reps, vægt og pause
+                                    </span>
+
+                                </div>
+
+                                <span class="exercise-arrow">
+                                    ›
+                                </span>
+
+                            </button>
+                        }
+
+                    </div>
+                }
+
+            </div>
+
+
+            <!-- =================================================
+                 MUSKELGRUPPER
+            ================================================== -->
+
+            <div class="section-title muscle-section-title">
+                VÆLG MUSKELGRUPPE
+            </div>
+
+            <div class="muscle-grid">
+
+                @foreach (var muscleGroup in muscleGroups)
+                {
+                    <button class="muscle-card"
+                            @onclick="() => OpenMuscleGroup(muscleGroup.Id)">
+
+                        <div class="muscle-icon">
+                            💪
+                        </div>
+
+                        <span>
+                            @muscleGroup.Name
+                        </span>
+
+                    </button>
+                }
+
+            </div>
+        }
+
+    </div>
+
+</div>
+
+
+@code
+{
+    [Parameter]
+    public int Id { get; set; }
+
+
+    private string dayName =
+        "Træningsdag";
+
+
+    private int trainingProgramId;
+
+
+    private List<MuscleGroupResponse> muscleGroups =
+        new();
+
+
+    private List<TrainingDayExerciseResponse> selectedExercises =
+        new();
+
+
+    private bool loading = true;
+
+    private bool isLeaving = false;
+
+
+    private string message = "";
+
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadPage();
+    }
+
+
+    private async Task LoadPage()
+    {
+        loading = true;
+
+        message = "";
+
+
+        try
+        {
+            var token =
+                await SecureStorage.Default.GetAsync(
+                    "auth_token"
+                );
+
+
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                Navigation.NavigateTo(
+                    "/login"
+                );
+
+                return;
+            }
+
+
+            Http.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue(
+                    "Bearer",
+                    token
+                );
+
+
+            // HENTER BRUGERENS PROGRAMMER
+            var programs =
+                await Http.GetFromJsonAsync<
+                    List<TrainingProgramResponse>>(
+                        "api/TrainingPrograms"
+                    );
+
+
+            // FINDER AKTUEL TRÆNINGSDAG
+            TrainingDayResponse? currentDay =
+                null;
+
+
+            if (programs != null)
+            {
+                foreach (var program in programs)
+                {
+                    var days =
+                        await Http.GetFromJsonAsync<
+                            List<TrainingDayResponse>>(
+                                $"api/TrainingDays/program/{program.Id}"
+                            );
+
+
+                    currentDay =
+                        days?
+                            .FirstOrDefault(
+                                day =>
+                                    day.Id ==
+                                    Id
+                            );
+
+
+                    if (currentDay != null)
+                    {
+                        trainingProgramId =
+                            program.Id;
+
+                        break;
+                    }
+                }
+            }
+
+
+            if (currentDay == null)
+            {
+                message =
+                    "Træningsdagen blev ikke fundet.";
+
+                return;
+            }
+
+
+            dayName =
+                currentDay.DayName;
+
+
+            // HENTER VALGTE ØVELSER
+            var exercises =
+                await Http.GetFromJsonAsync<
+                    List<TrainingDayExerciseResponse>>(
+                        $"api/TrainingDayExercises/day/{Id}"
+                    );
+
+
+            selectedExercises =
+                exercises ??
+                new List<TrainingDayExerciseResponse>();
+
+
+            // HENTER MUSKELGRUPPER
+            var muscles =
+                await Http.GetFromJsonAsync<
+                    List<MuscleGroupResponse>>(
+                        "api/MuscleGroups"
+                    );
+
+
+            muscleGroups =
+                muscles ??
+                new List<MuscleGroupResponse>();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+
+            message =
+                "Kunne ikke hente træningsdagen.";
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+
+    private void OpenMuscleGroup(
+        int muscleGroupId)
+    {
+        Navigation.NavigateTo(
+            $"/training-day/{Id}/muscle-group/{muscleGroupId}"
+        );
+    }
+
+
+    private void OpenExerciseSetup(
+        int trainingDayExerciseId)
+    {
+        Navigation.NavigateTo(
+            $"/training-day-exercise/{trainingDayExerciseId}"
+        );
+    }
+
+
+    private async Task GoBack()
+    {
+        if (isLeaving)
+        {
+            return;
+        }
+
+
+        isLeaving = true;
+
+
+        await Task.Delay(300);
+
+
+        Navigation.NavigateTo(
+            $"/training-program/{trainingProgramId}"
+        );
+    }
+}

@@ -1,0 +1,755 @@
+﻿@page "/training-day-exercise/{Id:int}"
+
+@using PixelFit.Models.Training
+@using System.Net.Http.Headers
+@using System.Net.Http.Json
+
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
+
+<div class="exercise-setup-page">
+
+    <div class="exercise-setup-overlay"></div>
+
+    <div class="exercise-setup-content @(isLeaving ? "page-leaving" : "")">
+
+        <!-- TOPBAR -->
+        <div class="setup-topbar">
+
+            <button class="back-button"
+                    @onclick="GoBack">
+                ‹
+            </button>
+
+            <div class="brand-header">
+
+                <img src="images/PixelFitLogo.png"
+                     alt="PixelFit Logo"
+                     class="brand-logo" />
+
+                <span>PIXELFIT</span>
+
+            </div>
+
+        </div>
+
+
+        @if (loading)
+        {
+            <div class="loader-wrapper">
+
+                <div class="loader"></div>
+
+                <p>
+                    Henter øvelse...
+                </p>
+
+            </div>
+        }
+        else if (!string.IsNullOrWhiteSpace(message))
+        {
+            <div class="status-message">
+                @message
+            </div>
+        }
+        else
+        {
+            <!-- HEADER -->
+            <div class="setup-header">
+
+                <p class="eyebrow">
+                    OPSÆT ØVELSE
+                </p>
+
+                <h1>
+                    @exerciseName
+                </h1>
+
+                <p class="subtitle">
+                    Tilpas sæt, reps, vægt og pause.
+                </p>
+
+            </div>
+
+
+            <!-- ØVELSESBILLEDE -->
+            @if (!string.IsNullOrWhiteSpace(imageUrl))
+            {
+                <div class="exercise-hero">
+
+                    <img src="@imageUrl"
+                         alt="@exerciseName"
+                         class="exercise-hero-image" />
+
+                </div>
+            }
+
+
+            <!-- SÆT -->
+            <div class="sets-section">
+
+                <div class="sets-header">
+
+                    <div>
+                        <p class="section-title">
+                            SÆT
+                        </p>
+
+                        <p class="sets-description">
+                            Hvert sæt kan have egne reps og vægt.
+                        </p>
+                    </div>
+
+                    <button class="add-set-button"
+                            disabled="@isSaving"
+                            @onclick="AddSet">
+
+                        + SÆT
+
+                    </button>
+
+                </div>
+
+
+                @if (sets.Count == 0)
+                {
+                    <div class="empty-state">
+
+                        <p>
+                            Ingen sæt endnu.
+                            Tryk på <strong>+ SÆT</strong>.
+                        </p>
+
+                    </div>
+                }
+                else
+                {
+                    <div class="set-cards">
+
+                        @for (var i = 0; i < sets.Count; i++)
+                        {
+                            var index = i;
+                            var set = sets[index];
+
+                            <div class="set-card">
+
+                                <!-- SET HEADER -->
+                                <div class="set-card-header">
+
+                                    <div class="set-number">
+                                        SÆT @(index + 1)
+                                    </div>
+
+                                    <button class="remove-set-button"
+                                            disabled="@isSaving"
+                                            @onclick="() => RemoveSet(index)">
+                                        ×
+                                    </button>
+
+                                </div>
+
+
+                                <!-- REPS + VÆGT -->
+                                <div class="set-input-grid">
+
+                                    <div class="input-group">
+
+                                        <label>
+                                            REPS
+                                        </label>
+
+                                        <input type="number"
+                                               min="1"
+                                               max="100"
+                                               @bind="set.Reps" />
+
+                                    </div>
+
+
+                                    <div class="input-group">
+
+                                        <label>
+                                            VÆGT (KG)
+                                        </label>
+
+                                        <input type="number"
+                                               min="0"
+                                               max="1000"
+                                               step="0.5"
+                                               @bind="set.Weight" />
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- PAUSE -->
+                                <div class="input-group full-width">
+
+                                    <label>
+                                        PAUSE MELLEM SÆT
+                                    </label>
+
+                                    <div class="rest-control">
+
+                                        <button type="button"
+                                                disabled="@isSaving"
+                                                @onclick="() => ChangeRest(set, -15)">
+                                            −
+                                        </button>
+
+                                        <span>
+                                            @set.RestBetweenSets sek
+                                        </span>
+
+                                        <button type="button"
+                                                disabled="@isSaving"
+                                                @onclick="() => ChangeRest(set, 15)">
+                                            +
+                                        </button>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        }
+
+                    </div>
+                }
+
+            </div>
+
+
+            <!-- STATUS -->
+            @if (!string.IsNullOrWhiteSpace(actionMessage))
+            {
+                <div class="action-message">
+                    @actionMessage
+                </div>
+            }
+
+
+        <!-- GEM -->
+        <button class="save-button"
+                disabled="@isSaving"
+                @onclick="SaveSets">
+
+            @(isSaving
+                        ? "GEMMER..."
+                        : "GEM ÆNDRINGER")
+
+        </button>
+                }
+
+    </div>
+
+</div>
+
+
+@code
+{
+    [Parameter]
+    public int Id { get; set; }
+
+
+    private int trainingDayId;
+
+
+    private string exerciseName =
+        "Øvelse";
+
+
+    private string imageUrl =
+        string.Empty;
+
+
+    private List<EditableExerciseSet> sets =
+        new();
+
+
+    private bool loading = true;
+
+    private bool isSaving = false;
+
+    private bool isLeaving = false;
+
+
+    private string message = "";
+
+    private string actionMessage = "";
+
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadPage();
+    }
+
+
+
+    private async Task LoadPage()
+    {
+        loading = true;
+
+        message = "";
+
+        actionMessage = "";
+
+        try
+        {
+            var token =
+                await SecureStorage.Default.GetAsync(
+                    "auth_token"
+                );
+
+
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                Navigation.NavigateTo(
+                    "/login"
+                );
+
+                return;
+            }
+
+
+            Http.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue(
+                    "Bearer",
+                    token
+                );
+
+
+
+            // Vi finder øvelsen ved at gennemgå brugerens
+            // programmer og træningsdage.
+            var programs =
+                await Http.GetFromJsonAsync<
+                    List<TrainingProgramResponse>>(
+                        "api/TrainingPrograms"
+                    )
+                ??
+                new List<TrainingProgramResponse>();
+
+
+            TrainingDayExerciseResponse?
+                selectedExercise = null;
+
+
+            foreach (var program in programs)
+            {
+                var days =
+                    await Http.GetFromJsonAsync<
+                        List<TrainingDayResponse>>(
+                            $"api/TrainingDays/program/{program.Id}"
+                        )
+                    ??
+                    new List<TrainingDayResponse>();
+
+
+                foreach (var day in days)
+                {
+                    var exercises =
+                        await Http.GetFromJsonAsync<
+                            List<TrainingDayExerciseResponse>>(
+                                $"api/TrainingDayExercises/day/{day.Id}"
+                            )
+                        ??
+                        new List<TrainingDayExerciseResponse>();
+
+
+                    selectedExercise =
+                        exercises.FirstOrDefault(
+                            x => x.Id == Id
+                        );
+
+
+                    if (selectedExercise != null)
+                    {
+                        trainingDayId =
+                            day.Id;
+
+                        break;
+                    }
+                }
+
+
+                if (selectedExercise != null)
+                {
+                    break;
+                }
+            }
+
+
+            if (selectedExercise == null)
+            {
+                message =
+                    "Øvelsen blev ikke fundet.";
+
+                return;
+            }
+
+
+            exerciseName =
+                selectedExercise.ExerciseName;
+
+
+            imageUrl =
+                selectedExercise.ImageUrl;
+
+
+
+            var existingSets =
+                await Http.GetFromJsonAsync<
+                    List<ExerciseSetResponse>>(
+                        $"api/ExerciseSets/exercise/{Id}"
+                    )
+                ??
+                new List<ExerciseSetResponse>();
+
+
+            sets =
+                existingSets
+                    .Select(set =>
+                        new EditableExerciseSet
+                        {
+                            Id =
+                                set.Id,
+
+                            Reps =
+                                set.Reps,
+
+                            Weight =
+                                set.Weight,
+
+                            RestBetweenSets =
+                                set.RestBetweenSets
+                        }
+                    )
+                    .ToList();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+
+            message =
+                "Kunne ikke hente øvelsen.";
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+
+    private void AddSet()
+    {
+        sets.Add(
+            new EditableExerciseSet
+            {
+                Id = 0,
+
+                Reps = 10,
+
+                Weight = 0,
+
+                RestBetweenSets = 90
+            }
+        );
+    }
+
+
+
+    private async Task RemoveSet(int index)
+    {
+        if (index < 0 ||
+            index >= sets.Count)
+        {
+            return;
+        }
+
+
+        var set =
+            sets[index];
+
+
+        // Hvis sættet allerede findes i databasen,
+        // skal det slettes via API'et.
+        if (set.Id > 0)
+        {
+            try
+            {
+                isSaving = true;
+
+                actionMessage = "";
+
+
+                var token =
+                    await SecureStorage.Default.GetAsync(
+                        "auth_token"
+                    );
+
+
+                if (string.IsNullOrWhiteSpace(token))
+                {
+                    Navigation.NavigateTo(
+                        "/login"
+                    );
+
+                    return;
+                }
+
+
+                Http.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue(
+                        "Bearer",
+                        token
+                    );
+
+
+                var response =
+                    await Http.DeleteAsync(
+                        $"api/ExerciseSets/{set.Id}"
+                    );
+
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    actionMessage =
+                        "Sættet kunne ikke slettes.";
+
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+
+                actionMessage =
+                    "Der opstod en fejl.";
+
+                return;
+            }
+            finally
+            {
+                isSaving = false;
+            }
+        }
+
+
+        sets.RemoveAt(index);
+    }
+
+
+    private void ChangeRest(
+        EditableExerciseSet set,
+        int change)
+    {
+        var newValue =
+            set.RestBetweenSets +
+            change;
+
+
+        if (newValue < 0)
+        {
+            newValue = 0;
+        }
+
+
+        if (newValue > 3600)
+        {
+            newValue = 3600;
+        }
+
+
+        set.RestBetweenSets =
+            newValue;
+    }
+
+
+
+    private async Task SaveSets()
+    {
+        if (isSaving)
+        {
+            return;
+        }
+
+
+        actionMessage = "";
+
+
+        if (sets.Count == 0)
+        {
+            actionMessage =
+                "Tilføj mindst ét sæt.";
+
+            return;
+        }
+
+
+        // Lokal validering
+        if (sets.Any(
+            x =>
+                x.Reps < 1 ||
+                x.Reps > 100 ||
+                x.Weight < 0 ||
+                x.Weight > 1000 ||
+                x.RestBetweenSets < 0 ||
+                x.RestBetweenSets > 3600))
+        {
+            actionMessage =
+                "Kontroller reps, vægt og pause.";
+
+            return;
+        }
+
+
+        try
+        {
+            isSaving = true;
+
+
+            var token =
+                await SecureStorage.Default.GetAsync(
+                    "auth_token"
+                );
+
+
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                Navigation.NavigateTo(
+                    "/login"
+                );
+
+                return;
+            }
+
+
+            Http.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue(
+                    "Bearer",
+                    token
+                );
+
+
+            foreach (var set in sets)
+            {
+
+                if (set.Id == 0)
+                {
+                    var response =
+                        await Http.PostAsJsonAsync(
+                            "api/ExerciseSets",
+                            new
+                            {
+                                TrainingDayExerciseId =
+                                    Id,
+
+                                Reps =
+                                    set.Reps,
+
+                                Weight =
+                                    set.Weight,
+
+                                RestBetweenSets =
+                                    set.RestBetweenSets
+                            }
+                        );
+
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        actionMessage =
+                            "Et eller flere sæt kunne ikke gemmes.";
+
+                        return;
+                    }
+
+
+                    var created =
+                        await response.Content
+                            .ReadFromJsonAsync<
+                                ExerciseSetResponse>();
+
+
+                    if (created != null)
+                    {
+                        set.Id =
+                            created.Id;
+                    }
+                }
+
+
+                else
+                {
+                    var response =
+                        await Http.PutAsJsonAsync(
+                            $"api/ExerciseSets/{set.Id}",
+                            new
+                            {
+                                TrainingDayExerciseId =
+                                    Id,
+
+                                Reps =
+                                    set.Reps,
+
+                                Weight =
+                                    set.Weight,
+
+                                RestBetweenSets =
+                                    set.RestBetweenSets
+                            }
+                        );
+
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        actionMessage =
+                            "Et eller flere sæt kunne ikke opdateres.";
+
+                        return;
+                    }
+                }
+            }
+
+
+            actionMessage =
+                "Sæt gemt ✓";
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+
+            actionMessage =
+                "Der opstod en fejl under gemning.";
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+
+    private async Task GoBack()
+    {
+        if (isLeaving)
+        {
+            return;
+        }
+
+
+        isLeaving = true;
+
+
+        await Task.Delay(300);
+
+
+        Navigation.NavigateTo(
+            $"/training-day/{trainingDayId}"
+        );
+    }
+
+
+}

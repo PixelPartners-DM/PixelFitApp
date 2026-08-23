@@ -13,8 +13,6 @@
     background-attachment: fixed;
 }
 
-
-
 .profil-container {
     width: 100%;
     max-width: 500px;
@@ -22,6 +20,7 @@
     padding: 28px 20px 50px;
     box-sizing: border-box;
 }
+
 
 
 .profil-brand {
@@ -44,7 +43,6 @@
     font-weight: 900;
     letter-spacing: 4px;
 }
-
 
 
 .profil-overskrift {
@@ -73,7 +71,6 @@
     color: #aaa;
     font-size: 14px;
 }
-
 
 
 
@@ -126,7 +123,6 @@
 
 
 
-
 .menu-sektion {
     margin-bottom: 30px;
 }
@@ -139,8 +135,6 @@
     font-weight: 800;
     letter-spacing: 2px;
 }
-
-
 
 
 .menu-kort {
@@ -157,7 +151,17 @@
     text-align: left;
     cursor: pointer;
     backdrop-filter: blur(8px);
+    transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
 }
+
+
+    /* Lille feedback når man trykker */
+    .menu-kort:active {
+        transform: scale(0.97);
+        border-color: rgba(255, 255, 255, 0.25);
+        background: rgba(30, 30, 30, 0.95);
+    }
+
 
 
 .menu-venstre {
@@ -196,7 +200,6 @@
 }
 
 
-
 .logout-knap {
     width: 100%;
     margin-top: 5px;
@@ -204,9 +207,176 @@
     background: #e10600;
     border: none;
     border-radius: 16px;
-    color: #000000;
+    color: #000;
     font-size: 14px;
     font-weight: 900;
     letter-spacing: 2px;
     cursor: pointer;
+    transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+
+    .logout-knap:active {
+        transform: scale(0.96);
+        opacity: 0.85;
+    }
+
+
+
+
+/* PIXELFIT LOGO */
+.profil-brand {
+    opacity: 0;
+    transform: translateY(-14px);
+    animation: profilBrandEnter 0.45s ease-out forwards;
+    animation-delay: 0.05s;
+}
+
+
+/* VELKOMST */
+.profil-overskrift {
+    opacity: 0;
+    transform: translateY(18px);
+    animation: profilContentEnter 0.5s ease-out forwards;
+    animation-delay: 0.15s;
+}
+
+
+/* DAGENS TRÆNING + KALORIER */
+.hurtig-oversigt {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+    animation: profilCardsEnter 0.5s ease-out forwards;
+    animation-delay: 0.27s;
+}
+
+
+/* TRÆNING */
+.training-section {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: profilContentEnter 0.5s ease-out forwards;
+    animation-delay: 0.38s;
+}
+
+
+/* KOST & UDVIKLING */
+.development-section {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: profilContentEnter 0.5s ease-out forwards;
+    animation-delay: 0.50s;
+}
+
+
+/* LOG UD */
+.logout-knap {
+    opacity: 0;
+    transform: translateY(16px) scale(0.97);
+    animation: profilButtonEnter 0.45s ease-out forwards;
+    animation-delay: 0.64s;
+}
+
+
+
+@keyframes profilBrandEnter {
+
+    from {
+        opacity: 0;
+        transform: translateY(-14px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+@keyframes profilContentEnter {
+
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+@keyframes profilCardsEnter {
+
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+
+@keyframes profilButtonEnter {
+
+    from {
+        opacity: 0;
+        transform: translateY(16px) scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+
+
+@media (max-width: 400px) {
+
+    .profil-container {
+        padding: 24px 16px 45px;
+    }
+
+
+    .profil-brand {
+        margin-bottom: 38px;
+    }
+
+
+    .profil-logo {
+        width: 48px;
+        height: 48px;
+    }
+
+
+    .profil-brand span {
+        font-size: 21px;
+        letter-spacing: 3px;
+    }
+
+
+    .profil-overskrift h1 {
+        font-size: 29px;
+    }
+
+
+    .hurtig-oversigt {
+        gap: 10px;
+    }
+
+
+    .oversigt-kort {
+        padding: 15px;
+        min-height: 140px;
+    }
+
+
+    .menu-kort {
+        padding: 15px;
+    }
 }

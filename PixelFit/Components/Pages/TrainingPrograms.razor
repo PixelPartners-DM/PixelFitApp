@@ -1,0 +1,259 @@
+﻿@page "/traeningsprogrammer"
+@using PixelFit.Models.Training
+@using System.Net.Http.Headers
+@using System.Net.Http.Json
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
+
+<div class="training-page">
+
+    <div class="background-overlay"></div>
+
+    <div class="training-content @(isLeaving ? "page-leaving" : "")">
+
+        <!-- Topbar -->
+        <div class="top-bar">
+
+            <button class="back-button"
+                    @onclick="GoBack">
+                ‹
+            </button>
+
+            <div class="brand-header">
+
+                <img src="images/PixelFitLogo.png"
+                     alt="PixelFit Logo"
+                     class="brand-logo" />
+
+                <span>PIXELFIT</span>
+
+            </div>
+
+        </div>
+
+
+        <!-- Header -->
+        <div class="training-header">
+
+            <p class="eyebrow">
+                DIN TRÆNING
+            </p>
+
+            <h1>
+                Træningsprogrammer
+            </h1>
+
+            <p class="subtitle">
+                Opret og administrer dine træningsprogrammer.
+            </p>
+
+        </div>
+
+
+        <!-- Opret program -->
+        <button class="create-program-button"
+                @onclick="CreateProgram">
+
+            <span class="plus">+</span>
+
+            OPRET PROGRAM
+
+        </button>
+
+
+        @if (loading)
+        {
+            <div class="loader-wrapper">
+
+                <div class="loader"></div>
+
+                <p>
+                    Henter programmer...
+                </p>
+
+            </div>
+        }
+        else if (!string.IsNullOrWhiteSpace(message))
+        {
+            <p class="status-text">
+                @message
+            </p>
+        }
+        else if (programs.Count == 0)
+        {
+            <div class="empty-state">
+
+                <div class="empty-icon">
+                    🏋️
+                </div>
+
+                <h2>
+                    Ingen programmer endnu
+                </h2>
+
+                <p>
+                    Opret dit første træningsprogram
+                    og vælg hvilke dage du vil træne.
+                </p>
+
+            </div>
+        }
+        else
+        {
+            <div class="section-title">
+                DINE PROGRAMMER
+            </div>
+
+            <div class="program-list">
+
+                @foreach (var program in programs)
+                {
+                    <button class="program-card"
+                            @onclick="() => OpenProgram(program.Id)">
+
+                        <div class="program-icon">
+                            🏋️
+                        </div>
+
+                        <div class="program-info">
+
+                            <h2>
+                                @program.Name
+                            </h2>
+
+                            <p>
+                                Se træningsdage og øvelser
+                            </p>
+
+                        </div>
+
+                        <span class="arrow">
+                            ›
+                        </span>
+
+                    </button>
+                }
+
+            </div>
+        }
+
+    </div>
+
+</div>
+
+
+@code
+{
+    // Liste over brugerens træningsprogrammer
+    private List<TrainingProgramResponse> programs = new();
+
+
+    // Bruges mens programmerne bliver hentet
+    private bool loading = true;
+
+
+    // Bruges til fejlbeskeder
+    private string message = "";
+
+
+    // Bruges til at starte exit-animationen
+    // når brugeren trykker tilbage
+    private bool isLeaving = false;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPrograms();
+    }
+
+
+    private async Task LoadPrograms()
+    {
+        loading = true;
+        message = "";
+
+        try
+        {
+            // Henter JWT-token fra SecureStorage
+            var token =
+                await SecureStorage.Default.GetAsync(
+                    "auth_token"
+                );
+
+
+            // Hvis brugeren ikke har et token,
+            // sendes personen tilbage til login
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                Navigation.NavigateTo("/login");
+                return;
+            }
+
+
+            // Sender JWT-token med API-request
+            Http.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue(
+                    "Bearer",
+                    token
+                );
+
+
+            // Henter brugerens træningsprogrammer
+            var result =
+                await Http.GetFromJsonAsync<
+                    List<TrainingProgramResponse>>(
+                        "api/TrainingPrograms"
+                    );
+
+
+            programs =
+                result ??
+                new List<TrainingProgramResponse>();
+        }
+        catch
+        {
+            message =
+                "Kunne ikke hente dine træningsprogrammer.";
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+
+    // Kører når brugeren trykker på tilbageknappen
+    private async Task GoBack()
+    {
+        // Starter exit-animationen
+        isLeaving = true;
+
+        // Venter så animationen kan blive vist
+        await Task.Delay(300);
+
+        // Sender brugeren tilbage til profilsiden
+        Navigation.NavigateTo("/my-profil");
+    }
+
+
+    // Sender brugeren til siden hvor et nyt program oprettes
+    private void CreateProgram()
+    {
+        Navigation.NavigateTo(
+            "/opret-traeningsprogram"
+        );
+    }
+
+
+    // Åbner et bestemt træningsprogram
+    private void OpenProgram(int id)
+    {
+        Navigation.NavigateTo(
+            $"/training-program/{id}"
+        );
+    }
+
+
+    
+}

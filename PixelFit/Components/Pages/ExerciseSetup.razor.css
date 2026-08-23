@@ -1,0 +1,715 @@
+﻿
+.exercise-setup-page {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    color: white;
+    background-image: linear-gradient( rgba(0, 0, 0, 0.58), rgba(0, 0, 0, 0.94) ), url("images/SetsBackground.avif");
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
+}
+
+
+/* Ekstra mørk PixelFit overlay */
+.exercise-setup-overlay {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient( circle at 25% 12%, rgba(255, 255, 255, 0.07), transparent 34% );
+    pointer-events: none;
+}
+
+
+
+.exercise-setup-content {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 30px 18px 70px;
+    box-sizing: border-box;
+}
+
+
+
+.setup-topbar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 38px;
+}
+
+
+
+.back-button {
+    width: 46px;
+    height: 46px;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    border-radius: 14px;
+    background: rgba(15, 15, 15, 0.82);
+    color: white;
+    font-size: 34px;
+    line-height: 1;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    opacity: 0;
+    transform: translateX(-16px);
+    animation: setupBackEnter 0.4s ease-out forwards;
+    animation-delay: 0.05s;
+    transition: transform 0.15s ease, background 0.15s ease;
+}
+
+
+    .back-button:active {
+        transform: scale(0.88);
+        background: rgba(255, 255, 255, 0.14);
+    }
+
+
+
+.brand-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    opacity: 0;
+    transform: translateY(-12px);
+    animation: setupLogoEnter 0.5s ease-out forwards;
+    animation-delay: 0.12s;
+}
+
+
+.brand-logo {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    animation: setupLogoFloat 3s ease-in-out infinite;
+}
+
+
+.brand-header span {
+    color: white;
+    font-size: 24px;
+    font-weight: 900;
+    letter-spacing: 5px;
+}
+
+
+
+.setup-header {
+    margin-bottom: 26px;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: setupContentEnter 0.55s ease-out forwards;
+    animation-delay: 0.20s;
+}
+
+
+.eyebrow {
+    margin: 0 0 9px;
+    color: rgba(255, 255, 255, 0.50);
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 4px;
+}
+
+
+.setup-header h1 {
+    margin: 0;
+    color: white;
+    font-size: 35px;
+    font-weight: 900;
+    line-height: 1.08;
+    letter-spacing: -1px;
+}
+
+
+.subtitle {
+    margin: 12px 0 0;
+    color: rgba(255, 255, 255, 0.60);
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+
+
+.exercise-hero {
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.11);
+    border-radius: 22px;
+    background: rgba(15, 15, 15, 0.94);
+    box-shadow: 0 16px 35px rgba(0, 0, 0, 0.45);
+    opacity: 0;
+    transform: translateY(20px) scale(0.97);
+    animation: setupCardEnter 0.55s ease-out forwards;
+    animation-delay: 0.32s;
+}
+
+
+    .exercise-hero::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient( to bottom, transparent 55%, rgba(0, 0, 0, 0.35) );
+        pointer-events: none;
+    }
+
+
+.exercise-hero-image {
+    display: block;
+    width: 100%;
+    height: 210px;
+    object-fit: cover;
+}
+
+
+
+.sets-section {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: setupContentEnter 0.55s ease-out forwards;
+    animation-delay: 0.42s;
+}
+
+
+.sets-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 14px;
+    margin-bottom: 16px;
+}
+
+
+.section-title {
+    margin: 0 0 5px;
+    color: rgba(255, 255, 255, 0.50);
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 3px;
+}
+
+
+.sets-description {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.44);
+    font-size: 12px;
+}
+
+
+
+.add-set-button {
+    flex-shrink: 0;
+    min-width: 90px;
+    padding: 12px 15px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 13px;
+    background: rgba(255, 255, 255, 0.09);
+    color: white;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    transition: transform 0.15s ease, background 0.15s ease;
+}
+
+
+    .add-set-button:active:not(:disabled) {
+        transform: scale(0.93);
+        background: rgba(255, 255, 255, 0.17);
+    }
+
+
+    .add-set-button:disabled {
+        opacity: 0.45;
+    }
+
+
+
+.empty-state {
+    padding: 28px 20px;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 18px;
+    background: rgba(12, 12, 12, 0.90);
+    color: rgba(255, 255, 255, 0.55);
+    text-align: center;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(10px);
+}
+
+
+    .empty-state p {
+        margin: 0;
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+
+    .empty-state strong {
+        color: white;
+    }
+
+
+
+.set-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+
+.set-card {
+    padding: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 19px;
+    background: linear-gradient( 135deg, rgba(25, 25, 25, 0.95), rgba(8, 8, 8, 0.95) );
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.38);
+    backdrop-filter: blur(12px);
+    animation: setupSetEnter 0.35s ease-out;
+}
+
+
+
+.set-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+
+.set-number {
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 2px;
+}
+
+
+
+.remove-set-button {
+    width: 35px;
+    height: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    border: 1px solid rgba(225, 6, 0, 0.40);
+    border-radius: 10px;
+    background: rgba(225, 6, 0, 0.12);
+    color: #ff625d;
+    font-size: 22px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.15s ease, background 0.15s ease;
+}
+
+
+    .remove-set-button:active:not(:disabled) {
+        transform: scale(0.88);
+        background: rgba(225, 6, 0, 0.24);
+    }
+
+
+    .remove-set-button:disabled {
+        opacity: 0.45;
+    }
+
+
+
+.set-input-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+
+    .input-group label {
+        color: rgba(255, 255, 255, 0.46);
+        font-size: 10px;
+        font-weight: 900;
+        letter-spacing: 1.5px;
+    }
+
+
+    .input-group input {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 15px 14px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 13px;
+        outline: none;
+        background: rgba(255, 255, 255, 0.06);
+        color: white;
+        font-size: 17px;
+        font-weight: 800;
+        transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+    }
+
+
+        .input-group input:focus {
+            border-color: rgba(255, 255, 255, 0.42);
+            background: rgba(255, 255, 255, 0.09);
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.035);
+        }
+
+
+.full-width {
+    width: 100%;
+}
+
+
+
+.rest-control {
+    display: grid;
+    grid-template-columns: 48px 1fr 48px;
+    align-items: center;
+    gap: 10px;
+}
+
+
+    .rest-control button {
+        height: 46px;
+        padding: 0;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.07);
+        color: white;
+        font-size: 22px;
+        font-weight: 900;
+        cursor: pointer;
+        transition: transform 0.15s ease, background 0.15s ease;
+    }
+
+
+        .rest-control button:active:not(:disabled) {
+            transform: scale(0.88);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+
+        .rest-control button:disabled {
+            opacity: 0.45;
+        }
+
+
+    .rest-control span {
+        min-height: 46px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 10px;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.045);
+        color: rgba(255, 255, 255, 0.84);
+        font-size: 14px;
+        font-weight: 900;
+    }
+
+.action-message {
+    margin-top: 18px;
+    padding: 14px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 14px;
+    background: rgba(12, 12, 12, 0.94);
+    color: rgba(255, 255, 255, 0.76);
+    text-align: center;
+    font-size: 13px;
+    animation: setupMessageEnter 0.3s ease-out;
+}
+
+
+
+.save-button {
+    width: 100%;
+    margin-top: 24px;
+    padding: 18px;
+    border: none;
+    border-radius: 17px;
+    background: white;
+    color: #101010;
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.40);
+    opacity: 0;
+    transform: translateY(18px) scale(0.96);
+    animation: setupButtonEnter 0.5s ease-out forwards;
+    animation-delay: 0.56s;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+
+    .save-button:active:not(:disabled) {
+        transform: scale(0.95);
+        box-shadow: 0 7px 18px rgba(0, 0, 0, 0.40);
+    }
+
+
+    .save-button:disabled {
+        opacity: 0.55;
+        cursor: default;
+    }
+
+
+
+.status-message {
+    padding: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 15px;
+    background: rgba(12, 12, 12, 0.94);
+    color: rgba(255, 255, 255, 0.72);
+    text-align: center;
+    font-size: 14px;
+}
+
+
+.loader-wrapper {
+    padding-top: 40px;
+    color: rgba(255, 255, 255, 0.60);
+    text-align: center;
+}
+
+
+.loader {
+    width: 40px;
+    height: 40px;
+    margin: 0 auto 15px;
+    border: 4px solid rgba(255, 255, 255, 0.12);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: setupSpin 0.8s linear infinite;
+}
+
+
+
+.exercise-setup-content.page-leaving {
+    pointer-events: none;
+    animation: setupPageExit 0.3s ease-in forwards;
+}
+
+
+
+@keyframes setupBackEnter {
+
+    from {
+        opacity: 0;
+        transform: translateX(-16px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+
+@keyframes setupLogoEnter {
+
+    from {
+        opacity: 0;
+        transform: translateY(-12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+@keyframes setupContentEnter {
+
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+@keyframes setupCardEnter {
+
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+
+@keyframes setupSetEnter {
+
+    from {
+        opacity: 0;
+        transform: translateY(14px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+
+@keyframes setupButtonEnter {
+
+    from {
+        opacity: 0;
+        transform: translateY(18px) scale(0.96);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+
+@keyframes setupMessageEnter {
+
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+@keyframes setupPageExit {
+
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateX(25px);
+    }
+}
+
+
+@keyframes setupLogoFloat {
+
+    0%, 100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+
+@keyframes setupSpin {
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+
+@media (max-width: 500px) {
+
+    .exercise-setup-content {
+        padding: 28px 16px 60px;
+    }
+
+
+    .setup-topbar {
+        margin-bottom: 34px;
+    }
+
+
+    .brand-logo {
+        width: 44px;
+        height: 44px;
+    }
+
+
+    .brand-header span {
+        font-size: 21px;
+        letter-spacing: 4px;
+    }
+
+
+    .setup-header h1 {
+        font-size: 32px;
+    }
+
+
+    .subtitle {
+        font-size: 14px;
+    }
+
+
+    .exercise-hero-image {
+        height: 185px;
+    }
+
+
+    .set-card {
+        padding: 16px;
+    }
+
+
+    .input-group input {
+        padding: 14px 12px;
+    }
+}
+
+
+
+@media (max-width: 350px) {
+
+    .sets-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+
+    .add-set-button {
+        width: 100%;
+    }
+
+
+    .set-input-grid {
+        grid-template-columns: 1fr;
+    }
+}

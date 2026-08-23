@@ -1,0 +1,480 @@
+﻿
+
+.create-program-page {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    color: white;
+    background-image: linear-gradient( rgba(0, 0, 0, 0.64), rgba(0, 0, 0, 0.95) ), url("images/CreateProgram.jpg");
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
+}
+
+
+/* Ekstra mørk PixelFit-effekt */
+.create-program-overlay {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient( circle at 25% 15%, rgba(255, 255, 255, 0.06), transparent 35% );
+    pointer-events: none;
+}
+
+
+.create-program-content {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 34px 18px 70px;
+    box-sizing: border-box;
+}
+
+
+
+.create-topbar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 42px;
+}
+
+
+.back-button {
+    width: 46px;
+    height: 46px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 14px;
+    background: rgba(20, 20, 20, 0.78);
+    color: white;
+    font-size: 34px;
+    line-height: 1;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateX(-15px);
+    animation: createBackEnter 0.4s ease-out forwards;
+    animation-delay: 0.05s;
+    transition: transform 0.15s ease, background 0.15s ease;
+}
+
+
+    .back-button:active {
+        transform: scale(0.88);
+        background: rgba(255, 255, 255, 0.14);
+    }
+
+
+
+.brand-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    opacity: 0;
+    transform: translateY(-12px);
+    animation: createLogoEnter 0.5s ease-out forwards;
+    animation-delay: 0.12s;
+}
+
+
+.brand-logo {
+    width: 48px;
+    height: auto;
+    object-fit: contain;
+    animation: createLogoFloat 3s ease-in-out infinite;
+}
+
+
+.brand-header span {
+    font-size: 24px;
+    font-weight: 900;
+    letter-spacing: 5px;
+}
+
+
+.create-header {
+    margin-bottom: 32px;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: createContentEnter 0.55s ease-out forwards;
+    animation-delay: 0.22s;
+}
+
+
+.eyebrow {
+    margin: 0 0 9px;
+    color: rgba(255, 255, 255, 0.55);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 4px;
+}
+
+
+.create-header h1 {
+    margin: 0;
+    font-size: 36px;
+    font-weight: 900;
+    line-height: 1.08;
+    letter-spacing: -1px;
+}
+
+
+.subtitle {
+    margin: 13px 0 0;
+    max-width: 450px;
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+
+
+.form-card {
+    margin-bottom: 34px;
+    padding: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 20px;
+    background: linear-gradient( 135deg, rgba(24, 24, 24, 0.94), rgba(10, 10, 10, 0.94) );
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+    animation: createCardEnter 0.5s ease-out forwards;
+    animation-delay: 0.34s;
+}
+
+
+    .form-card label {
+        display: block;
+        margin-bottom: 11px;
+        color: rgba(255, 255, 255, 0.55);
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+    }
+
+
+    .form-card input {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 16px 17px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 14px;
+        outline: none;
+        background: rgba(255, 255, 255, 0.06);
+        color: white;
+        font-size: 16px;
+        transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+    }
+
+
+        .form-card input::placeholder {
+            color: rgba(255, 255, 255, 0.30);
+        }
+
+
+        .form-card input:focus {
+            border-color: rgba(255, 255, 255, 0.45);
+            background: rgba(255, 255, 255, 0.09);
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);
+        }
+
+
+
+.days-section {
+    margin-bottom: 34px;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: createContentEnter 0.5s ease-out forwards;
+    animation-delay: 0.46s;
+}
+
+
+.section-title {
+    margin: 0 0 14px 3px;
+    color: rgba(255, 255, 255, 0.48);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 3px;
+}
+
+
+
+.days-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 11px;
+}
+
+
+
+.day-button {
+    position: relative;
+    min-height: 64px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 16px;
+    background: rgba(18, 18, 18, 0.92);
+    color: rgba(255, 255, 255, 0.70);
+    font-size: 14px;
+    font-weight: 800;
+    text-align: left;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+
+    .day-button:active {
+        transform: scale(0.95);
+    }
+
+
+
+.day-check {
+    width: 25px;
+    height: 25px;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.20);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.04);
+    color: #111;
+    font-size: 14px;
+    font-weight: 900;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+
+
+.day-button.selected {
+    border-color: rgba(255, 255, 255, 0.60);
+    background: rgba(255, 255, 255, 0.96);
+    color: #111;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+
+    .day-button.selected .day-check {
+        border-color: #111;
+        background: #111;
+        color: white;
+        transform: scale(1.05);
+    }
+
+
+
+.status-message {
+    margin: -8px 0 20px;
+    padding: 14px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 14px;
+    background: rgba(20, 20, 20, 0.92);
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 13px;
+    text-align: center;
+}
+
+
+.save-button {
+    width: 100%;
+    min-height: 58px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 18px;
+    border: none;
+    border-radius: 18px;
+    background: white;
+    color: #111;
+    font-size: 15px;
+    font-weight: 900;
+    letter-spacing: 1.7px;
+    cursor: pointer;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.38);
+    opacity: 0;
+    transform: translateY(18px) scale(0.96);
+    animation: createButtonEnter 0.5s ease-out forwards;
+    animation-delay: 0.58s;
+    transition: transform 0.15s ease, opacity 0.15s ease, box-shadow 0.15s ease;
+}
+
+
+    .save-button:active:not(:disabled) {
+        transform: scale(0.95);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+    }
+
+
+    .save-button:disabled {
+        cursor: default;
+        opacity: 0.55;
+    }
+
+
+
+.create-program-content.page-leaving {
+    pointer-events: none;
+    animation: createPageExit 0.3s ease-in forwards;
+}
+
+
+@keyframes createBackEnter {
+
+    from {
+        opacity: 0;
+        transform: translateX(-15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+
+@keyframes createLogoEnter {
+
+    from {
+        opacity: 0;
+        transform: translateY(-12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+@keyframes createContentEnter {
+
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+@keyframes createCardEnter {
+
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+
+@keyframes createButtonEnter {
+
+    from {
+        opacity: 0;
+        transform: translateY(18px) scale(0.96);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+
+@keyframes createPageExit {
+
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateX(25px);
+    }
+}
+
+@keyframes createLogoFloat {
+
+    0%, 100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+@media (max-width: 500px) {
+
+    .create-program-content {
+        padding: 28px 16px 60px;
+    }
+
+
+    .create-topbar {
+        margin-bottom: 36px;
+    }
+
+
+    .brand-logo {
+        width: 44px;
+    }
+
+
+    .brand-header span {
+        font-size: 21px;
+        letter-spacing: 4px;
+    }
+
+
+    .create-header h1 {
+        font-size: 32px;
+    }
+
+
+    .subtitle {
+        font-size: 15px;
+    }
+
+
+    .form-card {
+        padding: 17px;
+    }
+
+
+    .day-button {
+        min-height: 60px;
+        padding: 13px;
+        font-size: 13px;
+    }
+}
+
+
+/* Meget små telefoner */
+@media (max-width: 350px) {
+
+    .days-grid {
+        grid-template-columns: 1fr;
+    }
+}

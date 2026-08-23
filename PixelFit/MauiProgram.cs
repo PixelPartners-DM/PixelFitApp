@@ -21,11 +21,8 @@ namespace PixelFit
                     );
                 });
 
-            // Gør det muligt at bruge Blazor/Razor i MAUI
             builder.Services.AddMauiBlazorWebView();
 
-            // Opretter HttpClient og fortæller appen,
-            // hvor PixelFit API'et ligger
             builder.Services.AddScoped(sp =>
                 new HttpClient
                 {
@@ -38,7 +35,6 @@ namespace PixelFit
             // i vores Razor-sider via Dependency Injection
             builder.Services.AddScoped<AuthService>();
 
-            // Udviklingsværktøjer som kun bruges under development
             builder.Services.AddBlazorWebViewDeveloperTools();
             builder.Logging.AddDebug();
 

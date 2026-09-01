@@ -1,7 +1,9 @@
 ﻿@page "/opret-traeningsprogram"
+
 @using PixelFit.Models.Training
 @using System.Net.Http.Headers
 @using System.Net.Http.Json
+
 @inject HttpClient Http
 @inject NavigationManager Navigation
 
@@ -12,7 +14,6 @@
 
     <div class="create-program-content @(isLeaving ? "page-leaving" : "")">
 
-        <!-- Topbar -->
         <div class="create-topbar">
 
             <button class="back-button"
@@ -33,7 +34,6 @@
         </div>
 
 
-        <!-- Header -->
         <div class="create-header">
 
             <p class="eyebrow">
@@ -51,7 +51,6 @@
         </div>
 
 
-        <!-- Programnavn -->
         <div class="form-card">
 
             <label>
@@ -64,8 +63,6 @@
 
         </div>
 
-
-        <!-- Dage -->
         <div class="days-section">
 
             <p class="section-title">
@@ -76,15 +73,18 @@
 
                 @foreach (var day in availableDays)
                 {
-                    <button class="day-button @(selectedDays.Contains(day) ? "selected" : "")"
+                    var isSelected =
+                    selectedDays.Contains(day);
+
+                    <button class="day-button @(isSelected ? "selected" : "")"
                             @onclick="() => ToggleDay(day)">
 
                         <span class="day-check">
-                            @(selectedDays.Contains(day) ? "✓" : "")
+                            @(isSelected ? "✓" : "")
                         </span>
 
                         <span>
-                            @day
+                            @GetDisplayDayName(day)
                         </span>
 
                     </button>
@@ -95,7 +95,6 @@
         </div>
 
 
-        <!-- Status -->
         @if (!string.IsNullOrWhiteSpace(message))
         {
             <p class="status-message">
@@ -104,7 +103,6 @@
         }
 
 
-        <!-- Gem -->
         <button class="save-button"
                 disabled="@isSaving"
                 @onclick="CreateProgram">
@@ -131,65 +129,105 @@
 
 @code
 {
-    private string programName = "";
 
-    private string message = "";
+    private string programName =
+        string.Empty;
+
+    private string message =
+        string.Empty;
 
     private bool isSaving = false;
 
     private bool isLeaving = false;
 
 
-    private readonly List<string> availableDays = new()
+
+    private readonly List<string> availableDays =
+        new()
+        {
+            "Mandag",
+            "Tirsdag",
+            "Onsdag",
+            "Torsdag",
+            "Fredag",
+            "Loerdag",
+            "Soendag"
+        };
+
+
+    // HashSet betyder at samme dag aldrig
+    // kan ligge i listen to gange
+    private readonly HashSet<string> selectedDays =
+        new();
+
+
+
+    private void ToggleDay(
+        string day)
     {
-        "Mandag",
-        "Tirsdag",
-        "Onsdag",
-        "Torsdag",
-        "Fredag",
-        "Loerdag",
-        "Soendag"
-    };
-
-
-    private readonly List<string> selectedDays = new();
-
-
-    private void ToggleDay(string day)
-    {
-        if (selectedDays.Contains(day))
+        if (!selectedDays.Add(day))
         {
             selectedDays.Remove(day);
-        }
-        else
-        {
-            selectedDays.Add(day);
         }
     }
 
 
+
+    private string GetDisplayDayName(
+        string day)
+    {
+        return day switch
+        {
+            "Loerdag" =>
+                "Lørdag",
+
+            "Soendag" =>
+                "Søndag",
+
+            _ =>
+                day
+        };
+    }
+
+
+
     private async Task CreateProgram()
     {
-        message = "";
-
-
-        if (string.IsNullOrWhiteSpace(programName))
+        if (isSaving)
         {
-            message = "Skriv et navn til træningsprogrammet.";
             return;
         }
 
 
+        message =
+            string.Empty;
+
+
+
+        if (string.IsNullOrWhiteSpace(programName))
+        {
+            message =
+                "Skriv et navn til træningsprogrammet.";
+
+            return;
+        }
+
+
+
         if (selectedDays.Count == 0)
         {
-            message = "Vælg mindst én træningsdag.";
+            message =
+                "Vælg mindst én træningsdag.";
+
             return;
         }
 
 
         try
         {
-            isSaving = true;
+            isSaving =
+                true;
+
 
 
             var token =
@@ -200,7 +238,10 @@
 
             if (string.IsNullOrWhiteSpace(token))
             {
-                Navigation.NavigateTo("/login");
+                Navigation.NavigateTo(
+                    "/login"
+                );
+
                 return;
             }
 
@@ -218,13 +259,24 @@
                     "api/TrainingPrograms",
                     new
                     {
-                        Name = programName
+                        Name =
+                            programName.Trim()
                     }
                 );
 
 
             if (!programResponse.IsSuccessStatusCode)
             {
+                var error =
+                    await programResponse.Content
+                        .ReadAsStringAsync();
+
+
+                Console.WriteLine(
+                    error
+                );
+
+
                 message =
                     "Programmet kunne ikke oprettes.";
 
@@ -234,7 +286,8 @@
 
             var createdProgram =
                 await programResponse.Content
-                    .ReadFromJsonAsync<TrainingProgramResponse>();
+                    .ReadFromJsonAsync<
+                        TrainingProgramResponse>();
 
 
             if (createdProgram == null)
@@ -263,43 +316,82 @@
                     );
 
 
-                if (!dayResponse.IsSuccessStatusCode)
+                if (dayResponse.IsSuccessStatusCode)
+                {
+                    continue;
+                }
+
+
+                var error =
+                    await dayResponse.Content
+                        .ReadAsStringAsync();
+
+
+                Console.WriteLine(
+                    error
+                );
+
+
+                // Backend returnerer Conflict hvis
+                // samme dag allerede findes
+                if (dayResponse.StatusCode ==
+                    System.Net.HttpStatusCode.Conflict)
+                {
+                    message =
+                        $"{GetDisplayDayName(day)} er allerede tilføjet til programmet.";
+                }
+                else
                 {
                     message =
                         "Programmet blev oprettet, men nogle træningsdage kunne ikke gemmes.";
-
-                    return;
                 }
+
+
+                return;
             }
+
 
 
             Navigation.NavigateTo(
                 $"/training-program/{createdProgram.Id}"
             );
         }
-        catch
+        catch (Exception ex)
         {
+            Console.WriteLine(
+                ex
+            );
+
+
             message =
                 "Der opstod en fejl. Prøv igen.";
         }
         finally
         {
-            isSaving = false;
+            isSaving =
+                false;
         }
     }
 
-
     private async Task GoBack()
     {
-        isLeaving = true;
+        if (isLeaving)
+        {
+            return;
+        }
 
-        await Task.Delay(300);
+
+        isLeaving =
+            true;
+
+
+        await Task.Delay(
+            300
+        );
+
 
         Navigation.NavigateTo(
             "/traeningsprogrammer"
         );
-    }
-
-
     }
 }

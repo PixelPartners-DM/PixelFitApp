@@ -6,15 +6,12 @@
 @inject NavigationManager Navigation
 
 
-<!-- Hele login-siden.
-     Denne wrapper bruges blandt andet til baggrundsbilledet. -->
+<!-- Denne wrapper bruges blandt andet til baggrundsbilledet. -->
 <div class="login-page">
 
-    <!-- Container til selve login-indholdet -->
     <div class="login-container">
 
 
-        <!-- PixelFit branding -->
         <div class="brand">
 
             <img src="images/PixelFitLogo.png"
@@ -28,11 +25,9 @@
         </div>
 
 
-        <!-- Login formular -->
         <div class="login-form">
 
 
-            <!-- Email -->
             <div class="input-group">
 
                 <label>Email</label>
@@ -44,7 +39,6 @@
             </div>
 
 
-            <!-- Adgangskode -->
             <div class="input-group">
 
                 <label>Adgangskode</label>
@@ -56,7 +50,6 @@
             </div>
 
 
-            <!-- Glemt adgangskode -->
             <div class="forgot-password">
 
                 <a href="/forgot-password">
@@ -66,7 +59,6 @@
             </div>
 
 
-            <!-- Login knap -->
             <button class="login-button"
                     @onclick="Login">
 
@@ -75,7 +67,6 @@
             </button>
 
 
-            <!-- Viser fejl eller statusbesked -->
             @if (!string.IsNullOrWhiteSpace(message))
             {
                 <p class="message">
@@ -84,7 +75,6 @@
             }
 
 
-            <!-- Opdeling -->
             <div class="divider">
 
                 <span></span>
@@ -96,7 +86,6 @@
             </div>
 
 
-            <!-- Link til opret bruger -->
             <p class="register-text">
 
                 Har du ikke en konto?
@@ -116,24 +105,18 @@
 
 @code {
 
-    // Gemmer brugerens email
     private string email = "";
 
-    // Gemmer brugerens adgangskode
     private string password = "";
 
-    // Bruges til fejl og statusbeskeder
     private string message = "";
 
 
-    // Bliver kørt når brugeren trykker LOG IND
     private async Task Login()
     {
-        // Fjerner tidligere beskeder
         message = "";
 
 
-        // Tjekker om email og adgangskode er udfyldt
         if (string.IsNullOrWhiteSpace(email) ||
             string.IsNullOrWhiteSpace(password))
         {
@@ -142,28 +125,21 @@
         }
 
 
-        // Viser at login er i gang
         message = "Logger ind...";
 
 
         try
         {
-            // Sender email og adgangskode til AuthService.
-            // Hvis login lykkes får vi JWT-token tilbage.
             var token = await AuthService.LoginAsync(
                 email,
                 password
             );
 
 
-            // DEBUG:
-            // Viser JWT-token i Visual Studio Output.
-            // Skal fjernes igen når vi er færdige med at teste.
             Console.WriteLine($"JWT TOKEN: {token}");
 
 
-            // Hvis vi ikke får et token tilbage,
-            // er login mislykket.
+            
             if (string.IsNullOrWhiteSpace(token))
             {
                 message = "Forkert email eller adgangskode.";
@@ -171,23 +147,17 @@
             }
 
 
-            // Gemmer JWT-token sikkert på enheden.
-            // Tokenet skal senere bruges når vi kalder
-            // beskyttede endpoints i API'et.
             await SecureStorage.Default.SetAsync(
                 "auth_token",
                 token
             );
 
 
-            // Sender den loggede bruger videre
-            // til profilsiden.
+            
             Navigation.NavigateTo("/my-profil");
         }
         catch (Exception)
         {
-            // Brugeren får en almindelig fejlbesked.
-            // Vi viser ikke tekniske systemoplysninger.
             message = "Der opstod en fejl under login. Prøv igen.";
         }
     }

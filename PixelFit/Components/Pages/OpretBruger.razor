@@ -9,7 +9,6 @@
 
     <div class="opret-container">
 
-        <!-- PixelFit branding -->
         <div class="logo-omraade">
 
             <img src="images/PixelFitLogo.png"
@@ -20,7 +19,6 @@
         </div>
 
 
-        <!-- Overskrift -->
         <div class="overskrift">
 
             <h1>Opret bruger</h1>
@@ -32,10 +30,8 @@
         </div>
 
 
-        <!-- Formular -->
         <div class="opret-form">
 
-            <!-- Email -->
             <div class="input-gruppe">
 
                 <label>Email</label>
@@ -47,7 +43,6 @@
             </div>
 
 
-            <!-- Adgangskode -->
             <div class="input-gruppe">
 
                 <label>Adgangskode</label>
@@ -59,7 +54,6 @@
             </div>
 
 
-            <!-- Gentag adgangskode -->
             <div class="input-gruppe">
 
                 <label>Gentag adgangskode</label>
@@ -71,7 +65,6 @@
             </div>
 
 
-            <!-- Opret bruger knap -->
             <button class="opret-knap"
                     @onclick="Opret">
 
@@ -80,7 +73,6 @@
             </button>
 
 
-            <!-- Viser fejl eller statusbesked -->
             @if (!string.IsNullOrWhiteSpace(besked))
             {
                 <p class="besked">@besked</p>
@@ -89,7 +81,6 @@
         </div>
 
 
-        <!-- Link tilbage til login -->
         <p class="login-link">
 
             Har du allerede en konto?
@@ -103,7 +94,6 @@
     </div>
 
 
-    <!-- Succes popup -->
     @if (visSucces)
     {
         <div class="popup-overlay">
@@ -131,30 +121,22 @@
 
 @code {
 
-    // Gemmer brugerens email
     private string email = "";
 
-    // Gemmer brugerens adgangskode
     private string password = "";
 
-    // Gemmer den gentagede adgangskode
     private string gentagPassword = "";
 
-    // Bruges til fejl og statusbeskeder
     private string besked = "";
 
-    // Bestemmer om succes-popup skal vises
     private bool visSucces = false;
 
 
-    // Bliver kørt når brugeren trykker på OPRET BRUGER
     private async Task Opret()
     {
-        // Fjerner en tidligere besked
         besked = "";
 
 
-        // Tjekker om alle felter er udfyldt
         if (string.IsNullOrWhiteSpace(email) ||
             string.IsNullOrWhiteSpace(password) ||
             string.IsNullOrWhiteSpace(gentagPassword))
@@ -164,7 +146,6 @@
         }
 
 
-        // Tjekker at adgangskoden er mindst 6 tegn
         if (password.Length < 6)
         {
             besked = "Adgangskoden skal være mindst 6 tegn.";
@@ -172,7 +153,6 @@
         }
 
 
-        // Tjekker om adgangskoderne matcher
         if (password != gentagPassword)
         {
             besked = "Adgangskoderne er ikke ens.";
@@ -180,20 +160,17 @@
         }
 
 
-        // Fortæller brugeren at oprettelsen er i gang
         besked = "Vent venligst...";
 
 
         try
         {
-            // Sender email og adgangskode til API'et
             var success = await AuthService.RegisterAsync(
                 email,
                 password
             );
 
 
-            // Hvis API'et afviser oprettelsen
             if (!success)
             {
                 besked = "Brugeren kunne ikke oprettes. Prøv igen.";
@@ -201,21 +178,17 @@
             }
 
 
-            // Fjerner statusbeskeden
             besked = "";
 
-            // Viser succes-popup
             visSucces = true;
         }
         catch (Exception)
         {
-            // Viser ikke tekniske fejl til brugeren
             besked = "Der opstod en fejl. Prøv igen senere.";
         }
     }
 
 
-    // Sender brugeren til login-siden
     private void GaaTilLogin()
     {
         Navigation.NavigateTo("/login");

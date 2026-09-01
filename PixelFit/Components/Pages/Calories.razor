@@ -1,0 +1,765 @@
+﻿@page "/kalorier"
+
+@using System.Net.Http.Headers
+@using System.Net.Http.Json
+
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
+
+<div class="calorie-page">
+
+    <div class="calorie-overlay"></div>
+
+    <div class="calorie-content @(isLeaving ? "page-leaving" : "")">
+
+        <!-- TOPBAR -->
+        <div class="calorie-topbar">
+
+            <button class="back-button"
+                    @onclick="GoBack">
+                ‹
+            </button>
+
+            <div class="brand-header">
+
+                <img src="images/PixelFitLogo.png"
+                     alt="PixelFit Logo"
+                     class="brand-logo" />
+
+                <span>PIXELFIT</span>
+
+            </div>
+
+        </div>
+
+
+        <!-- HEADER -->
+        <div class="calorie-header">
+
+            <p class="eyebrow">
+                KALORIER
+            </p>
+
+            <h1>
+                Dit kaloriebehov
+            </h1>
+
+            <p class="subtitle">
+                Beregn hvor mange kalorier din krop cirka har brug for hver dag.
+            </p>
+
+        </div>
+
+
+        @if (!showResult)
+        {
+            <!-- FORMULAR -->
+            <div class="calorie-form-card">
+
+                <!-- KØN -->
+                <div class="form-group">
+
+                    <label>
+                        KØN
+                    </label>
+
+                    <div class="gender-options">
+
+                        <button type="button"
+                                class="gender-button @(gender == "male" ? "selected" : "")"
+                                @onclick='() => gender = "male"'>
+
+                            Mand
+
+                        </button>
+
+                        <button type="button"
+                                class="gender-button @(gender == "female" ? "selected" : "")"
+                                @onclick='() => gender = "female"'>
+
+                            Kvinde
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ALDER -->
+                <div class="form-group">
+
+                    <label>
+                        ALDER
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <input type="number"
+                               @bind="age"
+                               min="14"
+                               max="100" />
+
+                        <span>
+                            år
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- HØJDE -->
+                <div class="form-group">
+
+                    <label>
+                        HØJDE
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <input type="number"
+                               @bind="height"
+                               min="100"
+                               max="250" />
+
+                        <span>
+                            cm
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- VÆGT -->
+                <div class="form-group">
+
+                    <label>
+                        VÆGT
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <input type="number"
+                               step="0.1"
+                               @bind="weight"
+                               min="30"
+                               max="300" />
+
+                        <span>
+                            kg
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- AKTIVITET -->
+                <div class="form-group">
+
+                    <label>
+                        AKTIVITETSNIVEAU
+                    </label>
+
+                    <select @bind="activityLevel">
+
+                        <option value="1.2">
+                            Stillesiddende
+                        </option>
+
+                        <option value="1.375">
+                            Let aktiv – 1-3 træninger om ugen
+                        </option>
+
+                        <option value="1.55">
+                            Moderat aktiv – 3-5 træninger om ugen
+                        </option>
+
+                        <option value="1.725">
+                            Meget aktiv – 6-7 træninger om ugen
+                        </option>
+
+                        <option value="1.9">
+                            Ekstremt aktiv
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                @if (!string.IsNullOrWhiteSpace(message))
+                {
+                    <p class="form-message">
+                        @message
+                    </p>
+                }
+
+
+                <button class="calculate-button"
+                        @onclick="CalculateCalories">
+
+                    BEREGN MIT BEHOV
+
+                </button>
+
+            </div>
+        }
+        else
+        {
+            <!-- RESULTAT -->
+            <div class="calorie-result">
+
+                <p class="result-eyebrow">
+                    DIT ESTIMEREDE BEHOV
+                </p>
+
+
+                <!-- VEDLIGEHOLD -->
+                <button class="main-calorie-result goal-select-card @(selectedGoal == "maintenance" ? "selected-goal" : "")"
+                        @onclick='() => SelectGoal("maintenance")'>
+
+                    <span class="result-label">
+                        VEDLIGEHOLD
+                    </span>
+
+                    <strong>
+                        @maintenanceCalories
+                    </strong>
+
+                    <span class="result-unit">
+                        kcal / dag
+                    </span>
+
+                    @if (selectedGoal == "maintenance")
+                    {
+                        <span class="goal-selected-badge">
+                            VALGT
+                        </span>
+                    }
+
+                </button>
+
+
+                <div class="goal-grid">
+
+                    <!-- VÆGTTAB -->
+                    <button class="goal-card goal-select-card @(selectedGoal == "loss" ? "selected-goal" : "")"
+                            @onclick='() => SelectGoal("loss")'>
+
+                        <span class="goal-icon">
+                            ↓
+                        </span>
+
+                        <p>
+                            VÆGTTAB
+                        </p>
+
+                        <h2>
+                            @weightLossCalories
+                        </h2>
+
+                        <span>
+                            kcal / dag
+                        </span>
+
+                        @if (selectedGoal == "loss")
+                        {
+                            <span class="goal-selected-badge small">
+                                VALGT
+                            </span>
+                        }
+
+                    </button>
+
+
+                    <!-- MUSKELOPBYGNING -->
+                    <button class="goal-card goal-select-card @(selectedGoal == "muscle" ? "selected-goal" : "")"
+                            @onclick='() => SelectGoal("muscle")'>
+
+                        <span class="goal-icon">
+                            💪
+                        </span>
+
+                        <p>
+                            MUSKELOPBYGNING
+                        </p>
+
+                        <h2>
+                            @muscleGainCalories
+                        </h2>
+
+                        <span>
+                            kcal / dag
+                        </span>
+
+                        @if (selectedGoal == "muscle")
+                        {
+                            <span class="goal-selected-badge small">
+                                VALGT
+                            </span>
+                        }
+
+                    </button>
+
+
+                    <!-- BULK -->
+                    <button class="goal-card goal-select-card @(selectedGoal == "bulk" ? "selected-goal" : "")"
+                            @onclick='() => SelectGoal("bulk")'>
+
+                        <span class="goal-icon">
+                            ↑
+                        </span>
+
+                        <p>
+                            BULK
+                        </p>
+
+                        <h2>
+                            @bulkCalories
+                        </h2>
+
+                        <span>
+                            kcal / dag
+                        </span>
+
+                        @if (selectedGoal == "bulk")
+                        {
+                            <span class="goal-selected-badge small">
+                                VALGT
+                            </span>
+                        }
+
+                    </button>
+
+                </div>
+
+
+                <!-- BMR -->
+                <div class="bmr-card">
+
+                    <div>
+
+                        <span>
+                            BASALFORBRÆNDING
+                        </span>
+
+                        <strong>
+                            @bmrCalories kcal
+                        </strong>
+
+                    </div>
+
+                    <p>
+                        Det din krop cirka forbrænder i fuldstændig hvile.
+                        Dit faktiske dagsbehov er højere, fordi aktivitet også
+                        forbrænder energi.
+                    </p>
+
+                </div>
+
+
+                @if (!string.IsNullOrWhiteSpace(saveMessage))
+                {
+                    <p class="form-message">
+                        @saveMessage
+                    </p>
+                }
+
+
+            <button class="calculate-button"
+                    disabled="@isSaving"
+                    @onclick="SaveGoal">
+
+                @(isSaving
+                                ? "GEMMER..."
+                                : "GEM MIT MÅL")
+
+            </button>
+
+
+                <p class="calorie-disclaimer">
+                    Resultatet er et estimat og kan variere fra person til person.
+                </p>
+
+
+                <button class="recalculate-button"
+                        @onclick="Recalculate">
+
+                    BEREGN IGEN
+
+                </button>
+
+            </div>
+                }
+
+    </div>
+
+</div>
+
+
+@code
+{
+    private string gender =
+        "male";
+
+    private int age =
+        25;
+
+    private double height =
+        180;
+
+    private double weight =
+        80;
+
+    private double activityLevel =
+        1.55;
+
+
+    private int bmrCalories;
+
+    private int maintenanceCalories;
+
+    private int weightLossCalories;
+
+    private int muscleGainCalories;
+
+    private int bulkCalories;
+
+
+    private string selectedGoal =
+        "maintenance";
+
+
+    private bool showResult =
+        false;
+
+    private bool isLeaving =
+        false;
+
+    private bool isSaving =
+        false;
+
+
+    private string message =
+        "";
+
+    private string saveMessage =
+        "";
+
+
+
+    private void CalculateCalories()
+    {
+        message =
+            "";
+
+        saveMessage =
+            "";
+
+            
+
+        if (age < 14 ||
+            age > 100 ||
+            height < 100 ||
+            height > 250 ||
+            weight < 30 ||
+            weight > 300)
+        {
+            message =
+                "Kontrollér venligst alder, højde og vægt.";
+
+            return;
+        }
+
+
+
+        double[] allowedActivityLevels =
+        {
+            1.2,
+            1.375,
+            1.55,
+            1.725,
+            1.9
+        };
+
+
+        var validActivityLevel =
+            allowedActivityLevels.Any(
+                level =>
+                    Math.Abs(
+                        level - activityLevel
+                    ) < 0.001
+            );
+
+
+        if (!validActivityLevel)
+        {
+            activityLevel =
+                1.55;
+        }
+
+
+
+        double bmr;
+
+
+        if (gender == "male")
+        {
+            bmr =
+                (10 * weight) +
+                (6.25 * height) -
+                (5 * age) +
+                5;
+        }
+        else
+        {
+            bmr =
+                (10 * weight) +
+                (6.25 * height) -
+                (5 * age) -
+                161;
+        }
+
+
+
+        var maintenance =
+            bmr *
+            activityLevel;
+
+
+        bmrCalories =
+            (int)Math.Round(
+                bmr
+            );
+
+
+        maintenanceCalories =
+            (int)Math.Round(
+                maintenance
+            );
+
+
+
+        weightLossCalories =
+            Math.Max(
+                1200,
+                maintenanceCalories - 500
+            );
+
+
+
+        muscleGainCalories =
+            maintenanceCalories + 200;
+
+
+
+        bulkCalories =
+            maintenanceCalories + 400;
+
+
+        // Starter altid på vedligehold
+        selectedGoal =
+            "maintenance";
+
+
+        showResult =
+            true;
+    }
+
+
+
+    private void SelectGoal(
+        string goal)
+    {
+        selectedGoal =
+            goal;
+
+
+        saveMessage =
+            "";
+    }
+
+
+
+    private int GetSelectedCalorieGoal()
+    {
+        return selectedGoal switch
+        {
+            "loss" =>
+                weightLossCalories,
+
+            "muscle" =>
+                muscleGainCalories,
+
+            "bulk" =>
+                bulkCalories,
+
+            _ =>
+                maintenanceCalories
+        };
+    }
+
+
+
+    private async Task SaveGoal()
+    {
+        if (isSaving)
+        {
+            return;
+        }
+
+
+        try
+        {
+            isSaving =
+                true;
+
+
+            saveMessage =
+                "";
+
+
+            var token =
+                await SecureStorage.Default.GetAsync(
+                    "auth_token"
+                );
+
+
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                Navigation.NavigateTo(
+                    "/login"
+                );
+
+                return;
+            }
+
+
+            Http.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue(
+                    "Bearer",
+                    token
+                );
+
+
+            var dailyGoal =
+                GetSelectedCalorieGoal();
+
+
+            var response =
+                await Http.PutAsJsonAsync(
+                    "api/UserProfile/me",
+                    new
+                    {
+                        Gender =
+                            gender,
+
+                        Age =
+                            age,
+
+                        Height =
+                            (int)Math.Round(
+                                height
+                            ),
+
+                        Weight =
+                            weight,
+
+                        ActivityLevel =
+                            activityLevel,
+
+                        BMR =
+                            (double)bmrCalories,
+
+                        TDEE =
+                            (double)maintenanceCalories,
+
+                        DailyCalorieGoal =
+                            dailyGoal
+                    }
+                );
+
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error =
+                    await response.Content
+                        .ReadAsStringAsync();
+
+
+                Console.WriteLine(
+                    error
+                );
+
+
+                saveMessage =
+                    "Dit kaloriemål kunne ikke gemmes.";
+
+                return;
+            }
+
+
+            saveMessage =
+                $"Dit mål på {dailyGoal} kcal er gemt ✓";
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(
+                ex
+            );
+
+
+            saveMessage =
+                "Der opstod en fejl under gemning.";
+        }
+        finally
+        {
+            isSaving =
+                false;
+        }
+    }
+
+
+
+    private void Recalculate()
+    {
+        showResult =
+            false;
+
+
+        message =
+            "";
+
+
+        saveMessage =
+            "";
+    }
+
+
+
+    private async Task GoBack()
+    {
+        if (isLeaving)
+        {
+            return;
+        }
+
+
+        isLeaving =
+            true;
+
+
+        await Task.Delay(
+            300
+        );
+
+
+        Navigation.NavigateTo(
+            "/my-profil"
+        );
+    }
+}

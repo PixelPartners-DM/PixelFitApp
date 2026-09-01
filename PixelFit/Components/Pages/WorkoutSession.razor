@@ -1,0 +1,898 @@
+﻿@page "/workout/{TrainingDayId:int}"
+
+@using PixelFit.Models.Training
+@using System.Net.Http.Headers
+@using System.Net.Http.Json
+
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
+
+<div class="workout-page">
+
+    <div class="workout-overlay"></div>
+
+    <div class="workout-content @(isLeaving ? "page-leaving" : "")">
+
+        <div class="workout-topbar">
+
+            <button class="back-button"
+                    @onclick="GoBack">
+                ‹
+            </button>
+
+            <div class="brand-header">
+
+                <img src="images/PixelFitLogo.png"
+                     alt="PixelFit Logo"
+                     class="brand-logo" />
+
+                <span>PIXELFIT</span>
+
+            </div>
+
+        </div>
+
+
+        @if (loading)
+        {
+            <div class="loader-wrapper">
+
+                <div class="loader"></div>
+
+                <p>
+                    Klargør træning...
+                </p>
+
+            </div>
+        }
+        else if (!string.IsNullOrWhiteSpace(message))
+        {
+            <div class="status-message">
+                @message
+            </div>
+        }
+        else if (workoutCompleted)
+        {
+            <div class="workout-complete">
+
+                <div class="complete-icon">
+                    🏆
+                </div>
+
+                <p class="eyebrow">
+                    TRÆNING FÆRDIG
+                </p>
+
+                <h1>
+                    Godt arbejde
+                </h1>
+
+                <p class="complete-text">
+                    Du har gennemført alle øvelser og sæt i dagens træning.
+                </p>
+
+                <div class="complete-stats">
+
+                    <div class="complete-stat">
+
+                        <strong>
+                            @workoutExercises.Count
+                        </strong>
+
+                        <span>
+                            Øvelser
+                        </span>
+
+                    </div>
+
+                    <div class="complete-stat">
+
+                        <strong>
+                            @GetTotalSetCount()
+                        </strong>
+
+                        <span>
+                            Sæt
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <button class="finish-workout-button"
+                        @onclick="FinishWorkout">
+
+                    TILBAGE TIL PROFIL
+
+                </button>
+
+            </div>
+        }
+        else if (CurrentExercise != null)
+        {
+            <div class="workout-progress-header">
+
+                <div>
+
+                    <p class="eyebrow">
+                        DAGENS TRÆNING
+                    </p>
+
+                    <h1>
+                        @dayName
+                    </h1>
+
+                    <div class="workout-meta">
+
+                        <span>
+                            @workoutExercises.Count øvelser
+                        </span>
+
+                        <span class="meta-dot">
+                            •
+                        </span>
+
+                        <span>
+                            @GetTotalSetCount() sæt
+                        </span>
+
+                        <span class="meta-dot">
+                            •
+                        </span>
+
+                        <span>
+                            ca. @GetEstimatedWorkoutMinutes() min
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <span class="exercise-counter">
+                    @(currentExerciseIndex + 1) / @workoutExercises.Count
+                </span>
+
+            </div>
+
+
+            <div class="current-exercise">
+
+                @if (!string.IsNullOrWhiteSpace(
+                            CurrentExercise.ImageUrl))
+                {
+                    <div class="workout-image-wrapper">
+
+                        <img src="@CurrentExercise.ImageUrl"
+                             alt="@CurrentExercise.ExerciseName"
+                             class="workout-image" />
+
+                        <div class="image-step-badge">
+                            ØVELSE @(currentExerciseIndex + 1)
+                        </div>
+
+                    </div>
+                }
+
+
+                <div class="exercise-title-area">
+
+                    <p class="exercise-label">
+                        NUVÆRENDE ØVELSE
+                    </p>
+
+                    <h2>
+                        @CurrentExercise.ExerciseName
+                    </h2>
+
+                    <p>
+                        @CurrentExercise.Sets.Count sæt i alt
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            @if (CurrentExercise.Sets.Count == 0)
+            {
+                <div class="no-sets-card">
+
+                    <p>
+                        Denne øvelse har ingen sæt konfigureret.
+                    </p>
+
+                    <button class="primary-workout-button"
+                            @onclick="GoToNextExercise">
+
+                        NÆSTE ØVELSE
+
+                    </button>
+
+                </div>
+            }
+            else if (CurrentSet != null)
+            {
+                <div class="current-set-card">
+
+                    <div class="set-header">
+
+                        <div>
+
+                            <p class="set-label">
+                                AKTUELT SÆT
+                            </p>
+
+                            <h3>
+                                Sæt @(currentSetIndex + 1)
+                            </h3>
+
+                        </div>
+
+                        <span class="set-counter">
+                            @(currentSetIndex + 1) / @CurrentExercise.Sets.Count
+                        </span>
+
+                    </div>
+
+
+                    <div class="set-values">
+
+                        <div class="set-value">
+
+                            <span class="set-value-label">
+                                REPS
+                            </span>
+
+                            <strong>
+                                @CurrentSet.Reps
+                            </strong>
+
+                        </div>
+
+
+                        <div class="set-value">
+
+                            <span class="set-value-label">
+                                VÆGT
+                            </span>
+
+                            <strong>
+                                @FormatWeight(CurrentSet.Weight)
+                            </strong>
+
+                            <span class="unit">
+                                kg
+                            </span>
+
+                        </div>
+
+
+                        <div class="set-value">
+
+                            <span class="set-value-label">
+                                PAUSE
+                            </span>
+
+                            <strong>
+                                @CurrentSet.RestBetweenSets
+                            </strong>
+
+                            <span class="unit">
+                                sek
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="set-dots">
+
+                        @for (var i = 0;
+                                        i < CurrentExercise.Sets.Count;
+                                        i++)
+                        {
+                            var index = i;
+
+                            <span class="set-dot @GetSetDotClass(index)">
+                            </span>
+                        }
+
+                    </div>
+
+
+                    <button class="complete-set-button"
+                            disabled="@changingStep"
+                            @onclick="CompleteCurrentSet">
+
+                        @if (changingStep)
+                        {
+                            <span>
+                                VENT...
+                            </span>
+                        }
+                        else
+                        {
+                            <span>
+                                ✓ FÆRDIG MED SÆT
+                            </span>
+                        }
+
+                    </button>
+
+                </div>
+
+
+                @if (HasNextSet())
+                {
+                    var nextSet =
+                    CurrentExercise.Sets[
+                    currentSetIndex + 1
+                    ];
+
+                    <div class="next-preview">
+
+                        <span class="next-label">
+                            NÆSTE SÆT
+                        </span>
+
+                        <div class="next-values">
+
+                            <span>
+                                @nextSet.Reps reps
+                            </span>
+
+                            <span>
+                                @FormatWeight(nextSet.Weight) kg
+                            </span>
+
+                            <span>
+                                @nextSet.RestBetweenSets sek pause
+                            </span>
+
+                        </div>
+
+                    </div>
+                }
+                else if (HasNextExercise())
+                {
+                    <div class="next-preview">
+
+                        <span class="next-label">
+                            NÆSTE ØVELSE
+                        </span>
+
+                        <strong>
+                            @workoutExercises[
+                            currentExerciseIndex + 1
+                                ].ExerciseName
+            </strong>
+
+                    </div>
+                }
+                else
+                {
+                    <div class="next-preview">
+
+                        <span class="next-label">
+                            SIDSTE ØVELSE
+                        </span>
+
+                        <strong>
+                            Gør det sidste sæt færdigt 💪
+                        </strong>
+
+                    </div>
+                }
+            }
+
+        }
+
+    </div>
+
+</div>
+
+
+@code
+{
+
+    [Parameter]
+    public int TrainingDayId { get; set; }
+
+
+
+    private string dayName =
+        "Træningsdag";
+
+
+    private List<WorkoutExercise> workoutExercises =
+        new();
+
+
+
+    private int currentExerciseIndex = 0;
+
+    private int currentSetIndex = 0;
+
+
+    private bool loading = true;
+
+    private bool changingStep = false;
+
+    private bool workoutCompleted = false;
+
+    private bool isLeaving = false;
+
+
+    private string message = "";
+
+
+
+    private WorkoutExercise? CurrentExercise
+    {
+        get
+        {
+            if (currentExerciseIndex < 0 ||
+                currentExerciseIndex >= workoutExercises.Count)
+            {
+                return null;
+            }
+
+            return workoutExercises[
+                currentExerciseIndex
+            ];
+        }
+    }
+
+
+
+    private ExerciseSetResponse? CurrentSet
+    {
+        get
+        {
+            if (CurrentExercise == null)
+            {
+                return null;
+            }
+
+
+            if (currentSetIndex < 0 ||
+                currentSetIndex >= CurrentExercise.Sets.Count)
+            {
+                return null;
+            }
+
+
+            return CurrentExercise.Sets[
+                currentSetIndex
+            ];
+        }
+    }
+
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadWorkout();
+    }
+
+
+    private async Task LoadWorkout()
+    {
+        loading = true;
+
+        message = "";
+
+        workoutCompleted = false;
+
+        currentExerciseIndex = 0;
+
+        currentSetIndex = 0;
+
+
+        try
+        {
+            var token =
+                await SecureStorage.Default.GetAsync(
+                    "auth_token"
+                );
+
+
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                Navigation.NavigateTo(
+                    "/login"
+                );
+
+                return;
+            }
+
+
+            Http.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue(
+                    "Bearer",
+                    token
+                );
+
+
+
+            var programs =
+                await Http.GetFromJsonAsync<
+                    List<TrainingProgramResponse>>(
+                        "api/TrainingPrograms"
+                    )
+                ??
+                new List<TrainingProgramResponse>();
+
+
+            TrainingDayResponse? currentDay =
+                null;
+
+
+            foreach (var program in programs)
+            {
+                var days =
+                    await Http.GetFromJsonAsync<
+                        List<TrainingDayResponse>>(
+                            $"api/TrainingDays/program/{program.Id}"
+                        )
+                    ??
+                    new List<TrainingDayResponse>();
+
+
+                currentDay =
+                    days.FirstOrDefault(
+                        x =>
+                            x.Id ==
+                            TrainingDayId
+                    );
+
+
+                if (currentDay != null)
+                {
+                    break;
+                }
+            }
+
+
+            if (currentDay == null)
+            {
+                message =
+                    "Træningsdagen blev ikke fundet.";
+
+                return;
+            }
+
+
+            dayName =
+                GetDisplayDayName(
+                    currentDay.DayName
+                );
+
+
+
+            var exercises =
+                await Http.GetFromJsonAsync<
+                    List<TrainingDayExerciseResponse>>(
+                        $"api/TrainingDayExercises/day/{TrainingDayId}"
+                    )
+                ??
+                new List<TrainingDayExerciseResponse>();
+
+
+            if (exercises.Count == 0)
+            {
+                message =
+                    "Der er ingen øvelser i denne træning.";
+
+                return;
+            }
+
+
+            var result =
+                new List<WorkoutExercise>();
+
+
+
+            foreach (var exercise in
+                exercises.OrderBy(
+                    x => x.Order
+                ))
+            {
+                var sets =
+                    await Http.GetFromJsonAsync<
+                        List<ExerciseSetResponse>>(
+                            $"api/ExerciseSets/exercise/{exercise.Id}"
+                        )
+                    ??
+                    new List<ExerciseSetResponse>();
+
+
+                result.Add(
+                    new WorkoutExercise
+                    {
+                        TrainingDayExerciseId =
+                            exercise.Id,
+
+                        ExerciseId =
+                            exercise.ExerciseId,
+
+                        ExerciseName =
+                            exercise.ExerciseName,
+
+                        ImageUrl =
+                            exercise.ImageUrl,
+
+                        Order =
+                            exercise.Order,
+
+                        Sets =
+                            sets
+                    }
+                );
+            }
+
+
+            workoutExercises =
+                result;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+
+            message =
+                "Kunne ikke starte træningen.";
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+
+
+    private async Task CompleteCurrentSet()
+    {
+        if (changingStep)
+        {
+            return;
+        }
+
+
+        changingStep = true;
+
+
+        try
+        {
+            // Lille delay så trykket føles smooth
+            await Task.Delay(180);
+
+
+            if (CurrentExercise == null)
+            {
+                return;
+            }
+
+
+
+            if (currentSetIndex <
+                CurrentExercise.Sets.Count - 1)
+            {
+                currentSetIndex++;
+
+                return;
+            }
+
+
+
+            if (currentExerciseIndex <
+                workoutExercises.Count - 1)
+            {
+                currentExerciseIndex++;
+
+                currentSetIndex = 0;
+
+                return;
+            }
+
+
+            workoutCompleted = true;
+        }
+        finally
+        {
+            changingStep = false;
+        }
+    }
+
+
+
+    private void GoToNextExercise()
+    {
+        if (currentExerciseIndex <
+            workoutExercises.Count - 1)
+        {
+            currentExerciseIndex++;
+
+            currentSetIndex = 0;
+        }
+        else
+        {
+            workoutCompleted = true;
+        }
+    }
+
+
+
+    private bool HasNextSet()
+    {
+        return CurrentExercise != null &&
+               currentSetIndex <
+               CurrentExercise.Sets.Count - 1;
+    }
+
+
+    private bool HasNextExercise()
+    {
+        return currentExerciseIndex <
+               workoutExercises.Count - 1;
+    }
+
+
+    private string GetSetDotClass(
+        int index)
+    {
+        if (index < currentSetIndex)
+        {
+            return "completed";
+        }
+
+
+        if (index == currentSetIndex)
+        {
+            return "active";
+        }
+
+
+        return "";
+    }
+
+
+    private double GetExerciseProgress()
+    {
+        if (workoutExercises.Count == 0)
+        {
+            return 0;
+        }
+
+
+        return
+            ((double)(
+                currentExerciseIndex + 1
+            ) /
+            workoutExercises.Count)
+            * 100;
+    }
+
+
+    private int GetTotalSetCount()
+    {
+        return workoutExercises
+            .Sum(
+                x => x.Sets.Count
+            );
+    }
+
+
+    private string FormatWeight(
+        double weight)
+    {
+        if (weight % 1 == 0)
+        {
+            return
+                ((int)weight)
+                    .ToString();
+        }
+
+
+        return
+            weight.ToString(
+                "0.##"
+            );
+    }
+
+
+    private string GetDisplayDayName(
+        string dayName)
+    {
+        return dayName switch
+        {
+            "Loerdag" =>
+                "Lørdag",
+
+            "Soendag" =>
+                "Søndag",
+
+            _ =>
+                dayName
+        };
+    }
+
+
+
+    private async Task GoBack()
+    {
+        if (isLeaving)
+        {
+            return;
+        }
+
+
+        isLeaving = true;
+
+
+        await Task.Delay(300);
+
+
+        Navigation.NavigateTo(
+            "/my-profil"
+        );
+    }
+
+
+    private void FinishWorkout()
+    {
+        Navigation.NavigateTo(
+            "/my-profil"
+        );
+    }
+
+
+
+    private int GetEstimatedWorkoutMinutes()
+    {
+        if (workoutExercises.Count == 0)
+        {
+            return 0;
+        }
+
+        const int secondsPerSet = 45;
+        const int secondsBetweenExercises = 60;
+
+        var totalSeconds = 0;
+
+        foreach (var exercise in workoutExercises)
+        {
+            if (exercise.Sets.Count == 0)
+            {
+                continue;
+            }
+
+            totalSeconds +=
+                exercise.Sets.Count *
+                secondsPerSet;
+
+
+            for (var i = 0;
+                 i < exercise.Sets.Count - 1;
+                 i++)
+            {
+                totalSeconds +=
+                    exercise.Sets[i]
+                        .RestBetweenSets;
+            }
+        }
+
+
+        if (workoutExercises.Count > 1)
+        {
+            totalSeconds +=
+                (workoutExercises.Count - 1) *
+                secondsBetweenExercises;
+        }
+
+
+        return (int)Math.Ceiling(
+            totalSeconds / 60.0
+        );
+    }
+}

@@ -262,14 +262,12 @@
 }
 
 
-/* IKKE VALGT */
 .add-text {
     background: white;
     color: #111;
 }
 
 
-/* VALGT */
 .selected-text {
     background: rgba(255, 255, 255, 0.10);
     color: rgba(255, 255, 255, 0.75);

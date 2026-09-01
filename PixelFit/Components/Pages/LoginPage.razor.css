@@ -1,17 +1,14 @@
-﻿/* Hele login-siden og baggrundsbilledet */
-.login-page {
+﻿.login-page {
     position: fixed;
     inset: 0;
     width: 100vw;
     height: 100vh;
     margin: 0;
     padding: 0;
-    /* Mørkt filter oven på baggrundsbilledet */
     background: linear-gradient( rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.80) ), url("/images/GymBOy.jpg");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    /* Centrerer login-boksen på skærmen */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -19,7 +16,6 @@
 }
 
 
-/* Beholder login-indholdet i en passende bredde */
 .login-container {
     width: 100%;
     max-width: 420px;
@@ -28,14 +24,12 @@
 }
 
 
-/* Område med logo og PixelFit titel */
 .brand {
     text-align: center;
     margin-bottom: 45px;
 }
 
 
-/* PixelFit logo */
 .brand-logo {
     width: 120px;
     height: 120px;
@@ -45,7 +39,6 @@
 }
 
 
-/* PixelFit overskrift */
 .brand h1 {
     margin: 0;
     font-size: 42px;
@@ -55,7 +48,6 @@
 }
 
 
-/* Teksten under PixelFit */
 .brand p {
     font-family: "Montserrat", sans-serif;
     font-weight: 500;
@@ -64,13 +56,11 @@
 }
 
 
-/* Login formular */
 .login-form {
     width: 100%;
 }
 
 
-/* Email og adgangskode grupper */
 .input-group {
     display: flex;
     flex-direction: column;
@@ -78,7 +68,6 @@
 }
 
 
-    /* Teksten over inputfelterne */
     .input-group label {
         color: #d7d7d7;
         font-size: 14px;
@@ -87,7 +76,6 @@
     }
 
 
-    /* Inputfelter til email og adgangskode */
     .input-group input {
         width: 100%;
         padding: 16px 17px;
@@ -100,13 +88,11 @@
     }
 
 
-        /* Placeholder-tekst inde i inputfelterne */
         .input-group input::placeholder {
             color: #666;
         }
 
 
-        /* Ændrer inputfeltet når brugeren har fokus på det */
         .input-group input:focus {
             outline: none;
             border-color: #777;
@@ -114,7 +100,6 @@
         }
 
 
-/* Placering af glemt adgangskode */
 .forgot-password {
     display: flex;
     justify-content: flex-end;
@@ -123,7 +108,6 @@
 }
 
 
-    /* Design af glemt adgangskode link */
     .forgot-password a {
         color: #999;
         font-size: 13px;
@@ -131,7 +115,6 @@
     }
 
 
-/* Log ind knappen */
 .login-button {
     width: 100%;
     padding: 16px;
@@ -146,7 +129,6 @@
 }
 
 
-/* Besked til brugeren ved login */
 .message {
     text-align: center;
     color: #bbb;
@@ -155,7 +137,6 @@
 }
 
 
-/* Område omkring ELLER teksten */
 .divider {
     display: flex;
     align-items: center;
@@ -164,7 +145,6 @@
 }
 
 
-    /* Streger på hver side af ELLER */
     .divider span {
         flex: 1;
         height: 1px;
@@ -172,7 +152,6 @@
     }
 
 
-    /* ELLER teksten */
     .divider p {
         margin: 0;
         color: #666;
@@ -181,7 +160,6 @@
     }
 
 
-/* Teksten til oprettelse af ny konto */
 .register-text {
     text-align: center;
     color: #777;
@@ -189,7 +167,6 @@
 }
 
 
-    /* Opret konto link */
     .register-text a {
         color: white;
         font-weight: 700;

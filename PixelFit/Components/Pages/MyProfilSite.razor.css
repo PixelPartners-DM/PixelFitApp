@@ -6,12 +6,14 @@
     width: 100vw;
     height: 100vh;
     overflow-y: auto;
+    overflow-x: hidden;
     color: white;
     background: linear-gradient( rgba(0, 0, 0, 0.70), rgba(0, 0, 0, 0.94) ), url("images/Profilside.jpg");
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
 }
+
 
 .profil-container {
     width: 100%;
@@ -28,6 +30,10 @@
     align-items: center;
     gap: 12px;
     margin-bottom: 45px;
+    opacity: 0;
+    transform: translateY(-14px);
+    animation: profilBrandEnter 0.45s ease-out forwards;
+    animation-delay: 0.05s;
 }
 
 
@@ -45,8 +51,13 @@
 }
 
 
+
 .profil-overskrift {
     margin-bottom: 28px;
+    opacity: 0;
+    transform: translateY(18px);
+    animation: profilContentEnter 0.5s ease-out forwards;
+    animation-delay: 0.15s;
 }
 
 
@@ -74,51 +85,310 @@
 
 
 
-.hurtig-oversigt {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 35px;
+.today-section {
+    width: 100%;
+    margin-bottom: 14px;
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+    animation: profilCardsEnter 0.5s ease-out forwards;
+    animation-delay: 0.27s;
 }
 
 
-.oversigt-kort {
-    min-height: 145px;
-    padding: 17px;
+
+.today-workout-card {
+    position: relative;
+    width: 100%;
+    min-height: 210px;
+    display: flex;
+    flex-direction: column;
+    padding: 22px;
     box-sizing: border-box;
-    background: rgba(20, 20, 20, 0.90);
-    border: 1px solid #333;
-    border-radius: 18px;
-    backdrop-filter: blur(8px);
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    border-radius: 22px;
+    background: radial-gradient( circle at 85% 20%, rgba(255, 255, 255, 0.07), transparent 35% ), linear-gradient( 135deg, rgba(28, 28, 28, 0.97), rgba(10, 10, 10, 0.97) );
+    color: white;
+    text-align: left;
+    box-shadow: 0 16px 35px rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(12px);
+    cursor: pointer;
+    transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
 }
 
 
-.kort-ikon {
-    display: block;
-    margin-bottom: 12px;
-    font-size: 24px;
+    .today-workout-card:active {
+        transform: scale(0.975);
+        border-color: rgba(255, 255, 255, 0.28);
+    }
+
+
+    .today-workout-card.loading {
+        cursor: default;
+    }
+
+
+    .today-workout-card.rest-day {
+        min-height: 155px;
+        cursor: default;
+    }
+
+
+
+.today-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 
-.oversigt-kort p {
-    margin: 0;
-    color: #888;
-    font-size: 10px;
-    font-weight: 800;
-    letter-spacing: 1px;
+.today-heading {
+    display: flex;
+    align-items: center;
+    gap: 11px;
 }
 
 
-.oversigt-kort h2 {
-    margin: 8px 0 5px;
-    font-size: 17px;
-    font-weight: 800;
+.today-icon {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 13px;
+    background: rgba(255, 255, 255, 0.07);
+    font-size: 22px;
 }
 
 
-.kort-info {
-    color: #777;
+.today-label {
+    color: rgba(255, 255, 255, 0.48);
     font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 2px;
+}
+
+
+.today-arrow {
+    color: rgba(255, 255, 255, 0.38);
+    font-size: 34px;
+    line-height: 1;
+}
+
+
+
+.today-main {
+    margin-top: 22px;
+}
+
+
+    .today-main h2 {
+        margin: 0;
+        color: white;
+        font-size: 31px;
+        font-weight: 900;
+        letter-spacing: -0.7px;
+    }
+
+
+    .today-main p {
+        margin: 7px 0 0;
+        color: rgba(255, 255, 255, 0.52);
+        font-size: 14px;
+    }
+
+
+
+.today-workout-info {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+
+.today-info-dot {
+    color: rgba(255, 255, 255, 0.28);
+}
+
+
+
+.today-start {
+    width: 100%;
+    margin-top: 22px;
+    padding: 14px 17px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    box-sizing: border-box;
+    border-radius: 14px;
+    background: white;
+    color: #111;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 1.7px;
+}
+
+
+.today-start-icon {
+    font-size: 11px;
+}
+
+
+
+.calorie-summary-card {
+    width: 100%;
+    display: block;
+    margin-bottom: 34px;
+    padding: 17px 18px;
+    box-sizing: border-box;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 18px;
+    background: rgba(18, 18, 18, 0.94);
+    color: white;
+    text-align: left;
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.28);
+    backdrop-filter: blur(10px);
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(18px) scale(0.98);
+    animation: profilCardsEnter 0.5s ease-out forwards;
+    animation-delay: 0.34s;
+    transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+
+    .calorie-summary-card:active {
+        transform: scale(0.97);
+        border-color: rgba(255, 255, 255, 0.22);
+        background: rgba(28, 28, 28, 0.96);
+    }
+
+
+
+.calorie-summary-top {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+}
+
+
+
+.calorie-left {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex: 1;
+}
+
+
+.calorie-icon {
+    width: 46px;
+    height: 46px;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.06);
+    font-size: 23px;
+}
+
+
+.calorie-label {
+    display: block;
+    color: rgba(255, 255, 255, 0.48);
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 1.5px;
+}
+
+
+.calorie-left p {
+    margin: 5px 0 0;
+    color: rgba(255, 255, 255, 0.42);
+    font-size: 12px;
+}
+
+
+
+.calorie-right {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    margin-left: 12px;
+    flex-shrink: 0;
+}
+
+
+    .calorie-right strong {
+        color: white;
+        font-size: 23px;
+        font-weight: 900;
+    }
+
+
+    .calorie-right > span:not(.calorie-arrow) {
+        color: rgba(255, 255, 255, 0.50);
+        font-size: 11px;
+    }
+
+
+.calorie-arrow {
+    margin-left: 7px;
+    color: rgba(255, 255, 255, 0.35);
+    font-size: 27px;
+    line-height: 1;
+}
+
+
+
+.profile-macro-grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 7px;
+    margin-top: 16px;
+    padding-top: 14px;
+    box-sizing: border-box;
+    border-top: 1px solid rgba(255, 255, 255, 0.065);
+}
+
+
+
+.profile-macro-item {
+    min-width: 0;
+    padding: 10px 5px;
+    box-sizing: border-box;
+    border: 1px solid rgba(255, 255, 255, 0.065);
+    border-radius: 11px;
+    background: rgba(255, 255, 255, 0.035);
+    text-align: center;
+}
+
+
+
+.profile-macro-label {
+    display: block;
+    margin-bottom: 5px;
+    color: rgba(255, 255, 255, 0.38);
+    font-size: 7px;
+    font-weight: 900;
+    letter-spacing: 0.8px;
+}
+
+
+
+.profile-macro-item strong {
+    display: block;
+    color: white;
+    font-size: 11px;
+    font-weight: 850;
+    white-space: nowrap;
 }
 
 
@@ -144,6 +414,7 @@
     justify-content: space-between;
     margin-bottom: 10px;
     padding: 17px;
+    box-sizing: border-box;
     background: rgba(20, 20, 20, 0.92);
     border: 1px solid #333;
     border-radius: 16px;
@@ -155,7 +426,6 @@
 }
 
 
-    /* Lille feedback når man trykker */
     .menu-kort:active {
         transform: scale(0.97);
         border-color: rgba(255, 255, 255, 0.25);
@@ -173,6 +443,7 @@
 
 .menu-ikon {
     width: 38px;
+    flex-shrink: 0;
     font-size: 24px;
     text-align: center;
 }
@@ -200,18 +471,39 @@
 }
 
 
+.training-section {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: profilContentEnter 0.5s ease-out forwards;
+    animation-delay: 0.44s;
+}
+
+
+.development-section {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: profilContentEnter 0.5s ease-out forwards;
+    animation-delay: 0.54s;
+}
+
+
+
 .logout-knap {
     width: 100%;
     margin-top: 5px;
     padding: 17px;
-    background: #e10600;
     border: none;
     border-radius: 16px;
+    background: #e10600;
     color: #000;
     font-size: 14px;
     font-weight: 900;
     letter-spacing: 2px;
     cursor: pointer;
+    opacity: 0;
+    transform: translateY(16px) scale(0.97);
+    animation: profilButtonEnter 0.45s ease-out forwards;
+    animation-delay: 0.64s;
     transition: transform 0.15s ease, opacity 0.15s ease;
 }
 
@@ -220,63 +512,6 @@
         transform: scale(0.96);
         opacity: 0.85;
     }
-
-
-
-
-/* PIXELFIT LOGO */
-.profil-brand {
-    opacity: 0;
-    transform: translateY(-14px);
-    animation: profilBrandEnter 0.45s ease-out forwards;
-    animation-delay: 0.05s;
-}
-
-
-/* VELKOMST */
-.profil-overskrift {
-    opacity: 0;
-    transform: translateY(18px);
-    animation: profilContentEnter 0.5s ease-out forwards;
-    animation-delay: 0.15s;
-}
-
-
-/* DAGENS TRÆNING + KALORIER */
-.hurtig-oversigt {
-    opacity: 0;
-    transform: translateY(20px) scale(0.98);
-    animation: profilCardsEnter 0.5s ease-out forwards;
-    animation-delay: 0.27s;
-}
-
-
-/* TRÆNING */
-.training-section {
-    opacity: 0;
-    transform: translateY(20px);
-    animation: profilContentEnter 0.5s ease-out forwards;
-    animation-delay: 0.38s;
-}
-
-
-/* KOST & UDVIKLING */
-.development-section {
-    opacity: 0;
-    transform: translateY(20px);
-    animation: profilContentEnter 0.5s ease-out forwards;
-    animation-delay: 0.50s;
-}
-
-
-/* LOG UD */
-.logout-knap {
-    opacity: 0;
-    transform: translateY(16px) scale(0.97);
-    animation: profilButtonEnter 0.45s ease-out forwards;
-    animation-delay: 0.64s;
-}
-
 
 
 @keyframes profilBrandEnter {
@@ -365,18 +600,122 @@
     }
 
 
-    .hurtig-oversigt {
+    .today-workout-card {
+        min-height: 195px;
+        padding: 19px;
+    }
+
+
+    .today-main h2 {
+        font-size: 28px;
+    }
+
+
+    .today-start {
+        margin-top: 19px;
+        padding: 13px;
+    }
+
+
+
+    .calorie-summary-card {
+        padding: 15px 16px;
+    }
+
+
+    .calorie-summary-top {
+        gap: 8px;
+    }
+
+
+    .calorie-left {
         gap: 10px;
     }
 
 
-    .oversigt-kort {
-        padding: 15px;
-        min-height: 140px;
+    .calorie-icon {
+        width: 42px;
+        height: 42px;
+        font-size: 21px;
+    }
+
+
+    .calorie-label {
+        font-size: 9px;
+        letter-spacing: 1.2px;
+    }
+
+
+    .calorie-left p {
+        font-size: 11px;
+    }
+
+
+    .calorie-right {
+        margin-left: 5px;
+    }
+
+
+        .calorie-right strong {
+            font-size: 21px;
+        }
+
+
+        .calorie-right > span:not(.calorie-arrow) {
+            font-size: 9px;
+        }
+
+
+    .calorie-arrow {
+        margin-left: 3px;
+        font-size: 24px;
+    }
+
+
+
+    .profile-macro-grid {
+        gap: 5px;
+        margin-top: 14px;
+        padding-top: 12px;
+    }
+
+
+    .profile-macro-item {
+        padding: 9px 3px;
+    }
+
+
+    .profile-macro-label {
+        margin-bottom: 4px;
+        font-size: 6px;
+        letter-spacing: 0.5px;
+    }
+
+
+    .profile-macro-item strong {
+        font-size: 10px;
     }
 
 
     .menu-kort {
         padding: 15px;
+    }
+}
+
+
+@media (max-width: 350px) {
+
+    .profile-macro-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+
+    .profile-macro-label {
+        font-size: 7px;
+    }
+
+
+    .profile-macro-item strong {
+        font-size: 11px;
     }
 }

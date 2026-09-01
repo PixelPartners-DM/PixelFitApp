@@ -14,7 +14,7 @@
 
     <div class="training-day-content @(isLeaving ? "page-leaving" : "")">
 
-        <!-- TOPBAR -->
+
         <div class="day-topbar">
 
             <button class="back-button"
@@ -35,7 +35,7 @@
         </div>
 
 
-        <!-- HEADER -->
+
         <div class="day-header">
 
             <p class="eyebrow">
@@ -55,6 +55,7 @@
 
         @if (loading)
         {
+
             <div class="loader-wrapper">
 
                 <div class="loader"></div>
@@ -67,15 +68,13 @@
         }
         else if (!string.IsNullOrWhiteSpace(message))
         {
+
             <p class="status-message">
                 @message
             </p>
         }
         else
         {
-            <!-- =================================================
-                 VALGTE ØVELSER
-            ================================================== -->
 
             <div class="selected-section">
 
@@ -88,9 +87,21 @@
                 {
                     <div class="empty-state">
 
-                        <p>
-                            Du har endnu ikke tilføjet nogen øvelser.
-                        </p>
+                        <div class="empty-icon">
+                            ＋
+                        </div>
+
+                        <div class="empty-text">
+
+                            <h3>
+                                Ingen øvelser endnu
+                            </h3>
+
+                            <p>
+                                Vælg en muskelgruppe nedenfor for at tilføje en øvelse.
+                            </p>
+
+                        </div>
 
                     </div>
                 }
@@ -136,31 +147,37 @@
             </div>
 
 
-            <!-- =================================================
-                 MUSKELGRUPPER
-            ================================================== -->
 
-            <div class="section-title muscle-section-title">
-                VÆLG MUSKELGRUPPE
-            </div>
+            <div class="muscle-section">
 
-            <div class="muscle-grid">
+                <div class="section-title muscle-section-title">
+                    VÆLG MUSKELGRUPPE
+                </div>
 
-                @foreach (var muscleGroup in muscleGroups)
-                {
-                    <button class="muscle-card"
-                            @onclick="() => OpenMuscleGroup(muscleGroup.Id)">
 
-                        <div class="muscle-icon">
-                            💪
-                        </div>
+                <div class="muscle-grid">
 
-                        <span>
-                            @muscleGroup.Name
-                        </span>
+                    @foreach (var muscleGroup in muscleGroups)
+                    {
+                        <button class="muscle-card"
+                                @onclick="() => OpenMuscleGroup(muscleGroup.Id)">
 
-                    </button>
-                }
+                            <div class="muscle-icon">
+                                @GetMuscleIcon(muscleGroup.Name)
+                            </div>
+
+                            <span class="muscle-name">
+                                @muscleGroup.Name
+                            </span>
+
+                            <span class="muscle-arrow">
+                                ›
+                            </span>
+
+                        </button>
+                    }
+
+                </div>
 
             </div>
         }
@@ -172,6 +189,7 @@
 
 @code
 {
+
     [Parameter]
     public int Id { get; set; }
 
@@ -191,18 +209,20 @@
         new();
 
 
+
     private bool loading = true;
 
     private bool isLeaving = false;
 
-
     private string message = "";
+
 
 
     protected override async Task OnParametersSetAsync()
     {
         await LoadPage();
     }
+
 
 
     private async Task LoadPage()
@@ -237,7 +257,7 @@
                 );
 
 
-            // HENTER BRUGERENS PROGRAMMER
+
             var programs =
                 await Http.GetFromJsonAsync<
                     List<TrainingProgramResponse>>(
@@ -245,7 +265,7 @@
                     );
 
 
-            // FINDER AKTUEL TRÆNINGSDAG
+
             TrainingDayResponse? currentDay =
                 null;
 
@@ -265,8 +285,7 @@
                         days?
                             .FirstOrDefault(
                                 day =>
-                                    day.Id ==
-                                    Id
+                                    day.Id == Id
                             );
 
 
@@ -294,7 +313,7 @@
                 currentDay.DayName;
 
 
-            // HENTER VALGTE ØVELSER
+
             var exercises =
                 await Http.GetFromJsonAsync<
                     List<TrainingDayExerciseResponse>>(
@@ -307,7 +326,7 @@
                 new List<TrainingDayExerciseResponse>();
 
 
-            // HENTER MUSKELGRUPPER
+
             var muscles =
                 await Http.GetFromJsonAsync<
                     List<MuscleGroupResponse>>(
@@ -321,7 +340,10 @@
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex);
+            Console.WriteLine(
+                ex
+            );
+
 
             message =
                 "Kunne ikke hente træningsdagen.";
@@ -333,6 +355,49 @@
     }
 
 
+    private string GetMuscleIcon(
+        string muscleName)
+    {
+        return muscleName switch
+        {
+            "Bryst" =>
+                "🫁",
+
+            "Ryg" =>
+                "↩",
+
+            "Skuldre" =>
+                "🏋️",
+
+            "Biceps" =>
+                "💪",
+
+            "Triceps" =>
+                "💪",
+
+            "Ben" =>
+                "🦵",
+
+            "Mave" =>
+                "🔥",
+
+            "Underarme" =>
+                "✊",
+
+            "Nakke" =>
+                "⬆",
+
+            "Lægge" =>
+                "🦵",
+
+            "Balder" =>
+                "🏋️",
+
+            _ =>
+                "💪"
+        };
+    }
+
     private void OpenMuscleGroup(
         int muscleGroupId)
     {
@@ -342,6 +407,7 @@
     }
 
 
+
     private void OpenExerciseSetup(
         int trainingDayExerciseId)
     {
@@ -349,7 +415,6 @@
             $"/training-day-exercise/{trainingDayExerciseId}"
         );
     }
-
 
     private async Task GoBack()
     {
@@ -362,7 +427,9 @@
         isLeaving = true;
 
 
-        await Task.Delay(300);
+        await Task.Delay(
+            300
+        );
 
 
         Navigation.NavigateTo(

@@ -1,0 +1,686 @@
+﻿
+
+.nutrition-page {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    color: white;
+    background: linear-gradient( rgba(0, 0, 0, 0.68), rgba(0, 0, 0, 0.94) ), url("images/kostR.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    -webkit-overflow-scrolling: touch;
+}
+
+
+
+.nutrition-overlay {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient( 180deg, rgba(0, 0, 0, 0.08) 0%, rgba(0, 0, 0, 0.30) 45%, rgba(0, 0, 0, 0.72) 100% );
+    z-index: 0;
+}
+
+
+
+.nutrition-content {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 28px 16px 60px;
+    box-sizing: border-box;
+    opacity: 0;
+    transform: translateY(14px);
+    animation: nutritionPageEnter 0.45s ease-out forwards;
+}
+
+
+
+    .nutrition-content.page-leaving {
+        animation: nutritionPageLeave 0.28s ease-in forwards;
+    }
+
+
+.nutrition-topbar {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 46px;
+    opacity: 0;
+    transform: translateY(-14px);
+    animation: nutritionTopEnter 0.45s ease-out forwards;
+    animation-delay: 0.05s;
+}
+
+
+
+.back-button {
+    width: 54px;
+    height: 54px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    background: rgba(24, 24, 24, 0.92);
+    color: white;
+    font-size: 38px;
+    font-weight: 300;
+    line-height: 1;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+
+    .back-button:active {
+        transform: scale(0.92);
+        background: rgba(38, 38, 38, 0.96);
+        border-color: rgba(255, 255, 255, 0.22);
+    }
+
+
+
+.brand-header {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+}
+
+
+.brand-logo {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+}
+
+
+.brand-header span {
+    color: white;
+    font-size: 23px;
+    font-weight: 900;
+    letter-spacing: 4px;
+}
+
+
+
+.nutrition-header {
+    margin-bottom: 30px;
+    opacity: 0;
+    transform: translateY(18px);
+    animation: nutritionContentEnter 0.5s ease-out forwards;
+    animation-delay: 0.14s;
+}
+
+
+.eyebrow {
+    margin: 0 0 10px;
+    color: rgba(255, 255, 255, 0.50);
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 4px;
+}
+
+
+.nutrition-header h1 {
+    margin: 0 0 10px;
+    color: white;
+    font-size: 32px;
+    font-weight: 900;
+    line-height: 1.05;
+}
+
+
+.subtitle {
+    max-width: 420px;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.58);
+    font-size: 14px;
+    line-height: 1.55;
+}
+
+
+
+.nutrition-summary-card {
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 36px;
+    padding: 22px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 22px;
+    background: rgba(20, 20, 20, 0.91);
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.26);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+    animation: nutritionCardEnter 0.5s ease-out forwards;
+    animation-delay: 0.24s;
+}
+
+
+    .nutrition-summary-card::after {
+        content: "";
+        position: absolute;
+        width: 170px;
+        height: 170px;
+        top: -75px;
+        right: -65px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.025);
+        pointer-events: none;
+    }
+
+
+
+.summary-top {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+
+.summary-label {
+    margin: 0 0 8px;
+    color: rgba(255, 255, 255, 0.45);
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 2px;
+}
+
+
+.summary-top h2 {
+    margin: 0;
+    color: white;
+    font-size: 30px;
+    font-weight: 900;
+    line-height: 1.1;
+}
+
+
+    .summary-top h2 span {
+        color: rgba(255, 255, 255, 0.42);
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+
+.summary-icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.05);
+    font-size: 25px;
+}
+
+
+
+.calorie-progress {
+    width: 100%;
+    height: 7px;
+    margin-top: 22px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+
+.calorie-progress-fill {
+    height: 100%;
+    min-width: 0;
+    border-radius: inherit;
+    background: rgba(255, 255, 255, 0.92);
+    transition: width 0.45s ease;
+}
+
+
+.remaining-text {
+    margin: 9px 0 0;
+    color: rgba(255, 255, 255, 0.48);
+    font-size: 11px;
+}
+
+
+
+.macro-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-top: 22px;
+}
+
+
+.macro-card {
+    min-width: 0;
+    padding: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.035);
+}
+
+
+    .macro-card span {
+        display: block;
+        margin-bottom: 6px;
+        color: rgba(255, 255, 255, 0.40);
+        font-size: 9px;
+        font-weight: 900;
+        letter-spacing: 1.5px;
+    }
+
+
+    .macro-card strong {
+        display: block;
+        color: white;
+        font-size: 17px;
+        font-weight: 900;
+    }
+
+
+
+.meal-section {
+    margin-bottom: 28px;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: nutritionContentEnter 0.5s ease-out forwards;
+}
+
+
+
+    .meal-section:nth-of-type(1) {
+        animation-delay: 0.32s;
+    }
+
+
+    .meal-section:nth-of-type(2) {
+        animation-delay: 0.39s;
+    }
+
+
+    .meal-section:nth-of-type(3) {
+        animation-delay: 0.46s;
+    }
+
+
+    .meal-section:nth-of-type(4) {
+        animation-delay: 0.53s;
+    }
+
+
+.meal-section-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 15px;
+    margin: 0 3px 12px;
+}
+
+
+.section-title {
+    margin: 0 0 4px;
+    color: rgba(255, 255, 255, 0.52);
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 2.5px;
+}
+
+
+.meal-calories {
+    color: rgba(255, 255, 255, 0.38);
+    font-size: 11px;
+}
+
+
+
+.add-food-button {
+    min-height: 44px;
+    padding: 0 16px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 13px;
+    background: rgba(27, 27, 27, 0.94);
+    color: white;
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+
+    .add-food-button:active {
+        transform: scale(0.94);
+        background: rgba(40, 40, 40, 0.98);
+        border-color: rgba(255, 255, 255, 0.25);
+    }
+
+
+.empty-meal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 78px;
+    padding: 15px;
+    box-sizing: border-box;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 17px;
+    background: rgba(16, 16, 16, 0.78);
+    backdrop-filter: blur(9px);
+    -webkit-backdrop-filter: blur(9px);
+}
+
+
+    .empty-meal p {
+        margin: 0;
+        color: rgba(255, 255, 255, 0.36);
+        font-size: 12px;
+    }
+
+
+
+.food-list {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+
+
+.food-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    min-height: 74px;
+    padding: 14px 14px 14px 17px;
+    box-sizing: border-box;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 17px;
+    background: rgba(20, 20, 20, 0.91);
+    backdrop-filter: blur(9px);
+    -webkit-backdrop-filter: blur(9px);
+    transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+
+.food-main {
+    min-width: 0;
+}
+
+
+    .food-main h3 {
+        margin: 0 0 5px;
+        overflow: hidden;
+        color: white;
+        font-size: 14px;
+        font-weight: 800;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+
+    .food-main p {
+        margin: 0;
+        color: rgba(255, 255, 255, 0.43);
+        font-size: 10px;
+    }
+
+
+
+.delete-food-button {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding: 0;
+    border: 1px solid rgba(225, 6, 0, 0.38);
+    border-radius: 12px;
+    background: rgba(225, 6, 0, 0.10);
+    color: #ff4b47;
+    font-family: inherit;
+    font-size: 23px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.15s ease, background 0.15s ease;
+}
+
+
+    .delete-food-button:active {
+        transform: scale(0.90);
+        background: rgba(225, 6, 0, 0.20);
+    }
+
+
+
+.loader-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 280px;
+    gap: 15px;
+    opacity: 0;
+    animation: nutritionFadeIn 0.35s ease-out forwards;
+}
+
+
+.loader {
+    width: 32px;
+    height: 32px;
+    border: 3px solid rgba(255, 255, 255, 0.12);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: nutritionSpin 0.8s linear infinite;
+}
+
+
+.loader-wrapper p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.45);
+    font-size: 12px;
+}
+
+
+.status-message {
+    padding: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 16px;
+    background: rgba(20, 20, 20, 0.90);
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 12px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+}
+
+
+
+@keyframes nutritionPageEnter {
+
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+@keyframes nutritionPageLeave {
+
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+}
+
+
+@keyframes nutritionTopEnter {
+
+    from {
+        opacity: 0;
+        transform: translateY(-14px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+@keyframes nutritionContentEnter {
+
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+@keyframes nutritionCardEnter {
+
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+
+@keyframes nutritionFadeIn {
+
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+
+@keyframes nutritionSpin {
+
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+
+@media (max-width: 400px) {
+
+    .nutrition-content {
+        padding: 24px 14px 55px;
+    }
+
+
+    .nutrition-topbar {
+        margin-bottom: 40px;
+    }
+
+
+    .back-button {
+        width: 50px;
+        height: 50px;
+        border-radius: 15px;
+    }
+
+
+    .brand-logo {
+        width: 44px;
+        height: 44px;
+    }
+
+
+    .brand-header span {
+        font-size: 21px;
+        letter-spacing: 3px;
+    }
+
+
+    .nutrition-header h1 {
+        font-size: 29px;
+    }
+
+
+    .nutrition-summary-card {
+        padding: 19px;
+    }
+
+
+    .summary-top h2 {
+        font-size: 27px;
+    }
+
+
+    .macro-card {
+        padding: 13px;
+    }
+
+
+    .add-food-button {
+        padding: 0 13px;
+    }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+
+    .nutrition-content,
+    .nutrition-topbar,
+    .nutrition-header,
+    .nutrition-summary-card,
+    .meal-section,
+    .loader-wrapper {
+        opacity: 1;
+        transform: none;
+        animation: none;
+    }
+
+
+    .loader {
+        animation-duration: 1.4s;
+    }
+}

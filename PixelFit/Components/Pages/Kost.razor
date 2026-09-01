@@ -1,0 +1,473 @@
+﻿@page "/kost"
+
+@using System.Net.Http.Headers
+@using System.Net.Http.Json
+@using PixelFit.Models.Food
+@using PixelFit.Models.Nutrition
+
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
+
+<div class="nutrition-page">
+
+    <div class="nutrition-overlay"></div>
+
+    <div class="nutrition-content @(isLeaving ? "page-leaving" : "")">
+
+        <!-- TOPBAR -->
+        <div class="nutrition-topbar">
+
+            <button class="back-button"
+                    @onclick="GoBack">
+                ‹
+            </button>
+
+            <div class="brand-header">
+
+                <img src="images/PixelFitLogo.png"
+                     alt="PixelFit Logo"
+                     class="brand-logo" />
+
+                <span>PIXELFIT</span>
+
+            </div>
+
+        </div>
+
+
+        <!-- HEADER -->
+        <div class="nutrition-header">
+
+            <p class="eyebrow">
+                KOST
+            </p>
+
+            <h1>
+                Dagens kost
+            </h1>
+
+            <p class="subtitle">
+                Registrer dine måltider og hold styr på kalorier og makroer.
+            </p>
+
+        </div>
+
+
+        @if (loading)
+        {
+            <div class="loader-wrapper">
+
+                <div class="loader"></div>
+
+                <p>
+                    Henter dagens kost...
+                </p>
+
+            </div>
+        }
+        else if (!string.IsNullOrWhiteSpace(message))
+        {
+            <div class="status-message">
+                @message
+            </div>
+        }
+        else
+        {
+
+            <div class="nutrition-summary-card">
+
+                <div class="summary-top">
+
+                    <div>
+
+                        <p class="summary-label">
+                            KALORIER I DAG
+                        </p>
+
+                        <h2>
+                            @nutrition.TotalCalories
+
+                            <span>
+                                / @nutrition.DailyCalorieGoal kcal
+                            </span>
+                        </h2>
+
+                    </div>
+
+
+                    <span class="summary-icon">
+                        🔥
+                    </span>
+
+                </div>
+
+
+                <!-- KALORIE PROGRESS -->
+                <div class="calorie-progress">
+
+                    <div class="calorie-progress-fill"
+                         style="width: @GetCalorieProgress()%">
+                    </div>
+
+                </div>
+
+
+                <p class="remaining-text">
+                    @nutrition.RemainingCalories kcal tilbage
+                </p>
+
+
+                <!-- MAKROER -->
+                <div class="macro-grid">
+
+                    <div class="macro-card">
+
+                        <span>
+                            PROTEIN
+                        </span>
+
+                        <strong>
+                            @nutrition.Protein.ToString("0.#") g
+                        </strong>
+
+                    </div>
+
+
+                    <div class="macro-card">
+
+                        <span>
+                            CARBS
+                        </span>
+
+                        <strong>
+                            @nutrition.Carbs.ToString("0.#") g
+                        </strong>
+
+                    </div>
+
+
+                    <div class="macro-card">
+
+                        <span>
+                            FEDT
+                        </span>
+
+                        <strong>
+                            @nutrition.Fat.ToString("0.#") g
+                        </strong>
+
+                    </div>
+
+
+                    <div class="macro-card">
+
+                        <span>
+                            FIBRE
+                        </span>
+
+                        <strong>
+                            @nutrition.Fiber.ToString("0.#") g
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            @foreach (var mealType in mealTypes)
+            {
+                // Henter ALLE måltider med samme type
+                // fx alle "Frokost" eller alle "Snack"
+                var mealsForType =
+                nutrition.Meals
+                .Where(
+                meal =>
+                meal.MealType.Equals(
+                mealType,
+                StringComparison.OrdinalIgnoreCase
+                )
+                )
+                .ToList();
+
+
+                // Samler alle food items fra de meals
+                var foodItems =
+                mealsForType
+                .SelectMany(
+                meal => meal.Items
+                )
+                .ToList();
+
+
+                // Samlet kcal for denne måltidstype
+                var totalMealCalories =
+                foodItems.Sum(
+                item => item.Calories
+                );
+
+
+                <div class="meal-section">
+
+                    <!-- MÅLTID HEADER -->
+                    <div class="meal-section-header">
+
+                        <div>
+
+                            <p class="section-title">
+                                @mealType.ToUpper()
+                            </p>
+
+                            <span class="meal-calories">
+                                @totalMealCalories kcal
+                            </span>
+
+                        </div>
+
+
+                        <button class="add-food-button"
+                                @onclick="() => AddFood(mealType)">
+
+                            + TILFØJ
+
+                        </button>
+
+                    </div>
+
+
+                    <!-- INGEN MAD -->
+                    @if (foodItems.Count == 0)
+                    {
+                        <div class="empty-meal">
+
+                            <p>
+                                Ingen mad registreret endnu.
+                            </p>
+
+                        </div>
+                    }
+                    else
+                    {
+
+                        <div class="food-list">
+
+                            @foreach (var item in foodItems)
+                            {
+                                <div class="food-card">
+
+                                    <div class="food-main">
+
+                                        <h3>
+                                            @item.Name
+                                        </h3>
+
+                                        <p>
+                                            @item.Calories kcal
+                                            ·
+                                            @item.Protein.ToString("0.#") g protein
+                                        </p>
+
+                                    </div>
+
+
+                                    <button class="delete-food-button"
+                                            @onclick="() => DeleteFood(item.Id)">
+
+                                        ×
+
+                                    </button>
+
+                                </div>
+                            }
+
+                        </div>
+                    }
+
+                </div>
+            }
+        }
+
+    </div>
+
+</div>
+
+
+@code
+{
+
+    private readonly string[] mealTypes =
+    {
+        "Morgenmad",
+        "Frokost",
+        "Aftensmad",
+        "Snack"
+    };
+
+
+
+    private DailyNutritionResponse nutrition =
+        new();
+
+
+
+    private bool loading = true;
+
+    private bool isLeaving = false;
+
+    private string message = "";
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadNutrition();
+    }
+
+
+
+    private async Task LoadNutrition()
+    {
+        loading = true;
+
+        message = "";
+
+
+        try
+        {
+            var token =
+                await SecureStorage.Default.GetAsync(
+                    "auth_token"
+                );
+
+
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                Navigation.NavigateTo(
+                    "/login"
+                );
+
+                return;
+            }
+
+
+            Http.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue(
+                    "Bearer",
+                    token
+                );
+
+
+            var result =
+                await Http.GetFromJsonAsync<
+                    DailyNutritionResponse>(
+                        "api/Nutrition/today"
+                    );
+
+
+            nutrition =
+                result ??
+                new DailyNutritionResponse();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(
+                ex
+            );
+
+
+            message =
+                "Kunne ikke hente dagens kost.";
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+
+
+    private double GetCalorieProgress()
+    {
+        if (nutrition.DailyCalorieGoal <= 0)
+        {
+            return 0;
+        }
+
+
+        var progress =
+            (double)nutrition.TotalCalories /
+            nutrition.DailyCalorieGoal *
+            100;
+
+
+        return Math.Min(
+            100,
+            progress
+        );
+    }
+
+
+
+    private void AddFood(
+        string mealType)
+    {
+        Navigation.NavigateTo(
+            $"/kost/tilfoej/{Uri.EscapeDataString(mealType)}"
+        );
+    }
+
+
+    private async Task DeleteFood(
+        int foodItemId)
+    {
+        try
+        {
+            var response =
+                await Http.DeleteAsync(
+                    $"api/Nutrition/food/{foodItemId}"
+                );
+
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return;
+            }
+
+
+            // Genindlæser dagens kost
+            // så kcal og makroer opdateres
+            await LoadNutrition();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(
+                ex
+            );
+        }
+    }
+
+
+
+    private async Task GoBack()
+    {
+        if (isLeaving)
+        {
+            return;
+        }
+
+
+        isLeaving = true;
+
+
+        await Task.Delay(
+            300
+        );
+
+
+        Navigation.NavigateTo(
+            "/my-profil"
+        );
+    }
+}

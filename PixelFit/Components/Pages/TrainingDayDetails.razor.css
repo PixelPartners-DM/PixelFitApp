@@ -1,4 +1,5 @@
 ﻿
+
 .training-day-page {
     position: fixed;
     inset: 0;
@@ -11,6 +12,7 @@
     background-size: cover;
     background-position: center top;
     background-repeat: no-repeat;
+    -webkit-overflow-scrolling: touch;
 }
 
 
@@ -30,7 +32,7 @@
     width: 100%;
     max-width: 600px;
     margin: 0 auto;
-    padding: 34px 18px 70px;
+    padding: 34px 18px 80px;
     box-sizing: border-box;
 }
 
@@ -50,8 +52,9 @@
     height: 46px;
     flex-shrink: 0;
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
+    padding: 0;
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 14px;
     background: rgba(20, 20, 20, 0.78);
@@ -94,10 +97,12 @@
 
 
 .brand-header span {
+    color: white;
     font-size: 24px;
     font-weight: 900;
     letter-spacing: 5px;
 }
+
 
 
 .day-header {
@@ -120,6 +125,7 @@
 
 .day-header h1 {
     margin: 0;
+    color: white;
     font-size: 36px;
     font-weight: 900;
     line-height: 1.08;
@@ -138,47 +144,74 @@
 
 .section-title {
     margin: 0 0 14px 3px;
-    color: rgba(255, 255, 255, 0.48);
+    color: rgba(255, 255, 255, 0.50);
     font-size: 11px;
-    font-weight: 800;
+    font-weight: 850;
     letter-spacing: 3px;
 }
 
 
 
 .selected-section {
-    margin-bottom: 38px;
+    margin-bottom: 32px;
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(18px);
     animation: trainingDayContentEnter 0.5s ease-out forwards;
     animation-delay: 0.34s;
 }
 
 
-    .selected-section .section-title {
-        opacity: 0;
-        transform: translateY(10px);
-        animation: trainingDayContentEnter 0.4s ease-out forwards;
-        animation-delay: 0.30s;
-    }
-
-
 
 .empty-state {
-    padding: 28px 22px;
-    border: 1px solid rgba(255, 255, 255, 0.10);
-    border-radius: 18px;
-    background: rgba(15, 15, 15, 0.92);
-    color: rgba(255, 255, 255, 0.55);
-    text-align: center;
-    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.30);
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    box-sizing: border-box;
+    padding: 14px 15px;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 16px;
+    background: linear-gradient( 135deg, rgba(22, 22, 22, 0.92), rgba(10, 10, 10, 0.92) );
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.26);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }
 
 
-    .empty-state p {
+.empty-icon {
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.055);
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 24px;
+    font-weight: 400;
+}
+
+
+.empty-text {
+    min-width: 0;
+    flex: 1;
+}
+
+
+    .empty-text h3 {
+        margin: 0 0 4px;
+        color: white;
+        font-size: 13px;
+        font-weight: 850;
+    }
+
+
+    .empty-text p {
         margin: 0;
-        font-size: 14px;
-        line-height: 1.5;
+        color: rgba(255, 255, 255, 0.42);
+        font-size: 11px;
+        line-height: 1.4;
     }
 
 
@@ -186,7 +219,7 @@
 .exercise-list {
     display: flex;
     flex-direction: column;
-    gap: 13px;
+    gap: 12px;
 }
 
 
@@ -195,35 +228,36 @@
     width: 100%;
     display: flex;
     align-items: center;
-    gap: 15px;
-    padding: 14px;
+    gap: 14px;
+    padding: 13px;
+    box-sizing: border-box;
     border: 1px solid rgba(255, 255, 255, 0.10);
-    border-radius: 18px;
+    border-radius: 17px;
     background: linear-gradient( 135deg, rgba(24, 24, 24, 0.95), rgba(10, 10, 10, 0.95) );
     color: white;
     text-align: left;
     cursor: pointer;
-    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.32);
+    box-shadow: 0 9px 24px rgba(0, 0, 0, 0.30);
     backdrop-filter: blur(10px);
-    animation: exerciseCardEnter 0.45s ease-out;
-    transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+    -webkit-backdrop-filter: blur(10px);
+    transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
 }
 
 
     .exercise-card:active {
-        transform: scale(0.96);
-        border-color: rgba(255, 255, 255, 0.25);
-        background: linear-gradient( 135deg, rgba(32, 32, 32, 0.96), rgba(14, 14, 14, 0.96) );
-        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.38);
+        transform: scale(0.97);
+        border-color: rgba(255, 255, 255, 0.24);
+        background: rgba(30, 30, 30, 0.96);
     }
 
 
+
 .exercise-image {
-    width: 75px;
-    height: 75px;
+    width: 70px;
+    height: 70px;
     flex-shrink: 0;
     object-fit: cover;
-    border-radius: 14px;
+    border-radius: 13px;
     background: rgba(255, 255, 255, 0.05);
 }
 
@@ -236,24 +270,24 @@
 
 
     .exercise-info h2 {
-        margin: 0 0 5px;
+        margin: 0 0 4px;
         color: white;
-        font-size: 17px;
+        font-size: 16px;
         font-weight: 850;
     }
 
 
     .exercise-info p {
-        margin: 0 0 6px;
+        margin: 0 0 5px;
         color: rgba(255, 255, 255, 0.50);
-        font-size: 13px;
+        font-size: 12px;
     }
 
 
 .setup-hint {
     display: block;
-    color: rgba(255, 255, 255, 0.38);
-    font-size: 11px;
+    color: rgba(255, 255, 255, 0.36);
+    font-size: 10px;
     font-weight: 700;
     line-height: 1.4;
 }
@@ -262,9 +296,8 @@
 
 .exercise-arrow {
     flex-shrink: 0;
-    margin-left: 8px;
-    color: rgba(255, 255, 255, 0.40);
-    font-size: 32px;
+    color: rgba(255, 255, 255, 0.35);
+    font-size: 29px;
     line-height: 1;
     transition: transform 0.15s ease, color 0.15s ease;
 }
@@ -277,68 +310,99 @@
 
 
 
-.muscle-section-title {
-    margin-top: 6px;
+.muscle-section {
     opacity: 0;
-    transform: translateY(12px);
-    animation: trainingDayContentEnter 0.45s ease-out forwards;
-    animation-delay: 0.50s;
+    transform: translateY(18px);
+    animation: trainingDayContentEnter 0.5s ease-out forwards;
+    animation-delay: 0.48s;
 }
+
+
+.muscle-section-title {
+    margin-top: 4px;
+}
+
 
 
 .muscle-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-    margin-bottom: 38px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 30px;
 }
 
 
 .muscle-card {
-    min-height: 105px;
+    width: 100%;
+    min-width: 0;
+    min-height: 64px;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
     align-items: center;
     gap: 10px;
-    padding: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.10);
-    border-radius: 18px;
-    background: linear-gradient( 135deg, rgba(24, 24, 24, 0.94), rgba(10, 10, 10, 0.94) );
+    padding: 11px 12px;
+    box-sizing: border-box;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 16px;
+    background: linear-gradient( 135deg, rgba(24, 24, 24, 0.94), rgba(9, 9, 9, 0.94) );
     color: white;
+    text-align: left;
     cursor: pointer;
-    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.34);
+    box-shadow: 0 7px 20px rgba(0, 0, 0, 0.28);
     backdrop-filter: blur(10px);
-    opacity: 0;
-    transform: translateY(20px) scale(0.97);
-    animation: trainingDayCardEnter 0.5s ease-out forwards;
-    animation-delay: 0.58s;
-    transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+    -webkit-backdrop-filter: blur(10px);
+    transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
 }
 
 
     .muscle-card:active {
-        transform: scale(0.95);
-        border-color: rgba(255, 255, 255, 0.28);
-        background: rgba(28, 28, 28, 0.96);
+        transform: scale(0.96);
+        border-color: rgba(255, 255, 255, 0.24);
+        background: rgba(30, 30, 30, 0.96);
+        box-shadow: 0 5px 14px rgba(0, 0, 0, 0.35);
     }
 
 
+
 .muscle-icon {
-    width: 46px;
-    height: 46px;
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
     display: flex;
-    justify-content: center;
     align-items: center;
-    border-radius: 14px;
-    background: rgba(255, 255, 255, 0.06);
-    font-size: 24px;
+    justify-content: center;
+    border-radius: 11px;
+    background: rgba(255, 255, 255, 0.055);
+    font-size: 19px;
 }
 
 
-.muscle-card span:last-child {
-    font-size: 14px;
+
+.muscle-name {
+    flex: 1;
+    min-width: 0;
+    color: white;
+    font-size: 12px;
     font-weight: 850;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+
+.muscle-arrow {
+    flex-shrink: 0;
+    margin-left: auto;
+    color: rgba(255, 255, 255, 0.25);
+    font-size: 23px;
+    line-height: 1;
+    transition: transform 0.15s ease, color 0.15s ease;
+}
+
+
+.muscle-card:active .muscle-arrow {
+    transform: translateX(2px);
+    color: rgba(255, 255, 255, 0.70);
 }
 
 
@@ -380,6 +444,7 @@
 }
 
 
+
 @keyframes trainingDayBackEnter {
 
     from {
@@ -412,54 +477,12 @@
 
     from {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(18px);
     }
 
     to {
         opacity: 1;
         transform: translateY(0);
-    }
-}
-
-
-@keyframes trainingDayCardEnter {
-
-    from {
-        opacity: 0;
-        transform: translateY(20px) scale(0.97);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-
-@keyframes exerciseCardEnter {
-
-    from {
-        opacity: 0;
-        transform: translateY(12px) scale(0.98);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-
-@keyframes trainingDayPageExit {
-
-    from {
-        opacity: 1;
-        transform: translateX(0);
-    }
-
-    to {
-        opacity: 0;
-        transform: translateX(25px);
     }
 }
 
@@ -484,10 +507,25 @@
 }
 
 
+@keyframes trainingDayPageExit {
+
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateX(25px);
+    }
+}
+
+
+
 @media (max-width: 500px) {
 
     .training-day-content {
-        padding: 28px 16px 60px;
+        padding: 28px 14px 70px;
     }
 
 
@@ -507,9 +545,14 @@
     }
 
 
-    .day-header h1 {
-        font-size: 32px;
+    .day-header {
+        margin-bottom: 30px;
     }
+
+
+        .day-header h1 {
+            font-size: 32px;
+        }
 
 
     .subtitle {
@@ -517,32 +560,88 @@
     }
 
 
+    .selected-section {
+        margin-bottom: 30px;
+    }
+
+
     .exercise-image {
-        width: 68px;
-        height: 68px;
+        width: 65px;
+        height: 65px;
     }
 
 
     .exercise-info h2 {
-        font-size: 16px;
+        font-size: 15px;
     }
 
 
-    .setup-hint {
-        font-size: 10px;
+    .muscle-grid {
+        gap: 9px;
     }
 
 
     .muscle-card {
-        min-height: 96px;
-        padding: 14px;
+        min-height: 62px;
+        gap: 9px;
+        padding: 10px 11px;
+    }
+
+
+    .muscle-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 18px;
+    }
+
+
+    .muscle-name {
+        font-size: 12px;
+    }
+
+
+    .muscle-arrow {
+        font-size: 21px;
     }
 }
+
 
 
 @media (max-width: 350px) {
 
     .muscle-grid {
         grid-template-columns: 1fr;
+    }
+
+
+    .muscle-card {
+        min-height: 60px;
+    }
+
+
+    .muscle-name {
+        font-size: 13px;
+    }
+}
+
+
+
+@media (prefers-reduced-motion: reduce) {
+
+    .back-button,
+    .brand-header,
+    .brand-logo,
+    .day-header,
+    .selected-section,
+    .muscle-section,
+    .training-day-content.page-leaving {
+        opacity: 1;
+        transform: none;
+        animation: none;
+    }
+
+
+    .loader {
+        animation-duration: 1.4s;
     }
 }

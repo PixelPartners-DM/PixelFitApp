@@ -1,12 +1,21 @@
 ﻿@page "/my-profil"
 
+@using PixelFit.Models.Training
+@using PixelFit.Models.Nutrition
+@using PixelFit.Models.Food
+@using System.Net.Http.Headers
+@using System.Net.Http.Json
+@using System.Net
+
+@inject HttpClient Http
 @inject NavigationManager Navigation
+
 
 <div class="profil-side">
 
     <div class="profil-container">
+         
 
-        <!-- PixelFit branding -->
         <div class="profil-brand">
 
             <img src="images/PixelFitLogo.png"
@@ -18,7 +27,7 @@
         </div>
 
 
-        <!-- Velkomstområde -->
+
         <div class="profil-overskrift">
 
             <p class="overtekst">
@@ -36,56 +45,326 @@
         </div>
 
 
-        <!-- Hurtig oversigt -->
-        <div class="hurtig-oversigt">
 
-            <!-- Dagens træning -->
-            <div class="oversigt-kort">
+        <div class="today-section">
 
-                <span class="kort-ikon">
-                    🏋️
-                </span>
+            @if (loadingTraining)
+            {
+                <div class="today-workout-card loading">
 
-                <p>
-                    DAGENS TRÆNING
-                </p>
+                    <div class="today-top">
 
-                <h2>
-                    Ingen træning
-                </h2>
+                        <div class="today-heading">
 
-                <span class="kort-info">
-                    Ingen planlagt endnu
-                </span>
+                            <span class="today-icon">
+                                🏋️
+                            </span>
 
-            </div>
+                            <span class="today-label">
+                                DAGENS TRÆNING
+                            </span>
+
+                        </div>
+
+                    </div>
 
 
-            <!-- Kalorier -->
-            <div class="oversigt-kort">
+                    <div class="today-main">
 
-                <span class="kort-ikon">
-                    🔥
-                </span>
+                        <h2>
+                            Henter...
+                        </h2>
 
-                <p>
-                    KALORIER I DAG
-                </p>
+                        <p>
+                            Finder dagens træning
+                        </p>
 
-                <h2>
-                    0 kcal
-                </h2>
+                    </div>
 
-                <span class="kort-info">
-                    Intet registreret
-                </span>
+                </div>
+            }
+            else if (todayTrainingDay != null)
+            {
+                <button class="today-workout-card"
+                        @onclick="OpenTodayTraining">
 
-            </div>
+                    <div class="today-top">
+
+                        <div class="today-heading">
+
+                            <span class="today-icon">
+                                🏋️
+                            </span>
+
+                            <span class="today-label">
+                                DAGENS TRÆNING
+                            </span>
+
+                        </div>
+
+                        <span class="today-arrow">
+                            ›
+                        </span>
+
+                    </div>
+
+
+                    <div class="today-main">
+
+                        <h2>
+                            @GetDisplayDayName(
+                            todayTrainingDay.DayName
+                                                )
+                    </h2>
+
+
+                    <p class="today-workout-info">
+
+                        @if (todayExercises.Count == 0)
+                            {
+                                <span>
+                                    Ingen øvelser valgt endnu
+                                </span>
+                            }
+                            else
+                            {
+                                <span>
+                                    @(todayExercises.Count == 1
+                                                                ? "1 øvelse"
+                                                                : $"{todayExercises.Count} øvelser")
+                        </span>
+
+
+                        @if (todayEstimatedMinutes > 0)
+                                {
+                                    <span class="today-info-dot">
+                                        •
+                                    </span>
+
+                                    <span>
+                                        ca. @todayEstimatedMinutes min
+                                    </span>
+                                }
+                            }
+
+                        </p>
+
+                    </div>
+
+
+                    <div class="today-start">
+
+                        <span class="today-start-icon">
+                            ▶
+                        </span>
+
+                        START TRÆNING
+
+                    </div>
+
+                </button>
+            }
+            else
+            {
+                <div class="today-workout-card rest-day">
+
+                    <div class="today-top">
+
+                        <div class="today-heading">
+
+                            <span class="today-icon">
+                                😴
+                            </span>
+
+                            <span class="today-label">
+                                DAGENS TRÆNING
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="today-main">
+
+                        <h2>
+                            Hviledag
+                        </h2>
+
+                        <p>
+                            Ingen træning planlagt i dag
+                        </p>
+
+                    </div>
+
+                </div>
+            }
 
         </div>
 
 
-        <!-- Træningssektion -->
+
+        <button class="calorie-summary-card"
+                @onclick="GaaTilKalorier">
+
+            <!-- TOP -->
+            <div class="calorie-summary-top">
+
+                <div class="calorie-left">
+
+                    <span class="calorie-icon">
+                        🔥
+                    </span>
+
+                    <div>
+
+                        <span class="calorie-label">
+                            KALORIER I DAG
+                        </span>
+
+
+                        @if (loadingCalories || loadingNutrition)
+                        {
+                            <p>
+                                Henter dagens kost...
+                            </p>
+                        }
+                        else if (hasCalorieGoal)
+                        {
+                            <p>
+
+                                @if (todayNutrition.TotalCalories > 0)
+                                {
+                                    <span>
+                                        @todayNutrition.RemainingCalories kcal tilbage
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span>
+                                        @dailyCalorieGoal kcal mål
+                                    </span>
+                                }
+
+                            </p>
+                        }
+                        else
+                        {
+                            <p>
+                                Intet kaloriemål valgt endnu
+                            </p>
+                        }
+
+                    </div>
+
+                </div>
+
+
+                <div class="calorie-right">
+
+                    @if (loadingCalories || loadingNutrition)
+                    {
+                        <strong>
+                            ...
+                        </strong>
+                    }
+                    else
+                    {
+                        <strong>
+                            @todayNutrition.TotalCalories
+                        </strong>
+
+
+                        @if (hasCalorieGoal)
+                        {
+                            <span>
+                                / @dailyCalorieGoal kcal
+                            </span>
+                        }
+                        else
+                        {
+                            <span>
+                                kcal
+                            </span>
+                        }
+                    }
+
+
+                    <span class="calorie-arrow">
+                        ›
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            @if (!loadingNutrition)
+            {
+                <div class="profile-macro-grid">
+
+                    <!-- PROTEIN -->
+                    <div class="profile-macro-item">
+
+                        <span class="profile-macro-label">
+                            PROTEIN
+                        </span>
+
+                        <strong>
+                            @todayNutrition.Protein.ToString("0.#") g
+                        </strong>
+
+                    </div>
+
+
+                    <!-- CARBS -->
+                    <div class="profile-macro-item">
+
+                        <span class="profile-macro-label">
+                            CARBS
+                        </span>
+
+                        <strong>
+                            @todayNutrition.Carbs.ToString("0.#") g
+                        </strong>
+
+                    </div>
+
+
+                    <!-- FEDT -->
+                    <div class="profile-macro-item">
+
+                        <span class="profile-macro-label">
+                            FEDT
+                        </span>
+
+                        <strong>
+                            @todayNutrition.Fat.ToString("0.#") g
+                        </strong>
+
+                    </div>
+
+
+                    <!-- FIBRE -->
+                    <div class="profile-macro-item">
+
+                        <span class="profile-macro-label">
+                            FIBRE
+                        </span>
+
+                        <strong>
+                            @todayNutrition.Fiber.ToString("0.#") g
+                        </strong>
+
+                    </div>
+
+                </div>
+            }
+
+        </button>
+
+
+
         <div class="menu-sektion training-section">
 
             <p class="sektion-titel">
@@ -124,8 +403,8 @@
 
         </div>
 
+        
 
-        <!-- Kost og udvikling -->
         <div class="menu-sektion development-section">
 
             <p class="sektion-titel">
@@ -133,7 +412,8 @@
             </p>
 
 
-            <!-- Kalorier -->
+            <!-- KALORIER -->
+
             <button class="menu-kort"
                     @onclick="GaaTilKalorier">
 
@@ -164,7 +444,8 @@
             </button>
 
 
-            <!-- Kost -->
+            <!-- KOST -->
+
             <button class="menu-kort"
                     @onclick="GaaTilKost">
 
@@ -195,7 +476,8 @@
             </button>
 
 
-            <!-- Vægt -->
+            <!-- VÆGT -->
+
             <button class="menu-kort"
                     @onclick="GaaTilVaegt">
 
@@ -226,7 +508,8 @@
             </button>
 
 
-            <!-- Statistik -->
+            <!-- STATISTIK -->
+
             <button class="menu-kort"
                     @onclick="GaaTilStatistik">
 
@@ -259,7 +542,7 @@
         </div>
 
 
-        <!-- Log ud -->
+
         <button class="logout-knap"
                 @onclick="LogUd">
 
@@ -272,9 +555,475 @@
 </div>
 
 
-@code {
+@code
+{
 
-    // Sender brugeren til træningsprogrammer
+    private bool loadingTraining = true;
+
+    private TrainingDayResponse? todayTrainingDay;
+
+    private List<TrainingDayExerciseResponse> todayExercises =
+        new();
+
+    private int todayEstimatedMinutes = 0;
+
+
+
+    private bool loadingCalories = true;
+
+    private bool hasCalorieGoal = false;
+
+    private int dailyCalorieGoal = 0;
+
+
+
+    private bool loadingNutrition = true;
+
+    private DailyNutritionResponse todayNutrition =
+        new();
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadTodayTraining();
+
+        await LoadCalorieProfile();
+
+        await LoadTodayNutrition();
+    }
+
+
+
+    private async Task<string?> GetToken()
+    {
+        var token =
+            await SecureStorage.Default.GetAsync(
+                "auth_token"
+            );
+
+
+        if (string.IsNullOrWhiteSpace(token))
+        {
+            Navigation.NavigateTo(
+                "/login"
+            );
+
+            return null;
+        }
+
+
+        Http.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue(
+                "Bearer",
+                token
+            );
+
+
+        return token;
+    }
+
+
+
+    private async Task LoadTodayTraining()
+    {
+        loadingTraining = true;
+
+        todayEstimatedMinutes = 0;
+
+
+        try
+        {
+            var token =
+                await GetToken();
+
+
+            if (token == null)
+            {
+                return;
+            }
+
+
+            var todayName =
+                GetApiDayName(
+                    DateTime.Now.DayOfWeek
+                );
+
+
+            var programs =
+                await Http.GetFromJsonAsync<
+                    List<TrainingProgramResponse>>(
+                        "api/TrainingPrograms"
+                    )
+                ??
+                new List<TrainingProgramResponse>();
+
+
+            todayTrainingDay =
+                null;
+
+
+            todayExercises =
+                new List<TrainingDayExerciseResponse>();
+
+
+            todayEstimatedMinutes =
+                0;
+
+
+            foreach (var program in programs)
+            {
+                var days =
+                    await Http.GetFromJsonAsync<
+                        List<TrainingDayResponse>>(
+                            $"api/TrainingDays/program/{program.Id}"
+                        )
+                    ??
+                    new List<TrainingDayResponse>();
+
+
+                var matchingDay =
+                    days.FirstOrDefault(
+                        day =>
+                            string.Equals(
+                                day.DayName,
+                                todayName,
+                                StringComparison.OrdinalIgnoreCase
+                            )
+                    );
+
+
+                if (matchingDay == null)
+                {
+                    continue;
+                }
+
+
+                todayTrainingDay =
+                    matchingDay;
+
+
+                todayExercises =
+                    await Http.GetFromJsonAsync<
+                        List<TrainingDayExerciseResponse>>(
+                            $"api/TrainingDayExercises/day/{matchingDay.Id}"
+                        )
+                    ??
+                    new List<TrainingDayExerciseResponse>();
+
+
+                todayEstimatedMinutes =
+                    await CalculateEstimatedWorkoutTime();
+
+
+                break;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(
+                $"Kunne ikke hente dagens træning: {ex.Message}"
+            );
+
+
+            todayTrainingDay =
+                null;
+
+
+            todayExercises =
+                new List<TrainingDayExerciseResponse>();
+
+
+            todayEstimatedMinutes =
+                0;
+        }
+        finally
+        {
+            loadingTraining = false;
+        }
+    }
+
+
+
+    private async Task<int> CalculateEstimatedWorkoutTime()
+    {
+        if (todayExercises.Count == 0)
+        {
+            return 0;
+        }
+
+
+        const int secondsPerSet = 45;
+
+        const int secondsBetweenExercises = 60;
+
+
+        var totalSeconds = 0;
+
+        var exercisesWithSets = 0;
+
+
+        foreach (var exercise in todayExercises)
+        {
+            try
+            {
+                var sets =
+                    await Http.GetFromJsonAsync<
+                        List<ExerciseSetResponse>>(
+                            $"api/ExerciseSets/exercise/{exercise.Id}"
+                        )
+                    ??
+                    new List<ExerciseSetResponse>();
+
+
+                if (sets.Count == 0)
+                {
+                    continue;
+                }
+
+
+                exercisesWithSets++;
+
+
+                totalSeconds +=
+                    sets.Count *
+                    secondsPerSet;
+
+
+                for (var i = 0;
+                     i < sets.Count - 1;
+                     i++)
+                {
+                    totalSeconds +=
+                        sets[i].RestBetweenSets;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(
+                    $"Kunne ikke beregne tid for øvelse {exercise.Id}: {ex.Message}"
+                );
+            }
+        }
+
+
+        if (exercisesWithSets > 1)
+        {
+            totalSeconds +=
+                (exercisesWithSets - 1) *
+                secondsBetweenExercises;
+        }
+
+
+        return (int)Math.Ceiling(
+            totalSeconds / 60.0
+        );
+    }
+
+
+
+    private async Task LoadCalorieProfile()
+    {
+        loadingCalories = true;
+
+        hasCalorieGoal = false;
+
+        dailyCalorieGoal = 0;
+
+
+        try
+        {
+            var token =
+                await GetToken();
+
+
+            if (token == null)
+            {
+                return;
+            }
+
+
+            var response =
+                await Http.GetAsync(
+                    "api/UserProfile/me"
+                );
+
+
+            if (response.StatusCode ==
+                HttpStatusCode.NotFound)
+            {
+                return;
+            }
+
+
+            if (!response.IsSuccessStatusCode)
+            {
+                Console.WriteLine(
+                    $"Kunne ikke hente kalorieprofil. Status: {response.StatusCode}"
+                );
+
+                return;
+            }
+
+
+            var profile =
+                await response.Content
+                    .ReadFromJsonAsync<
+                        UserProfileResponse>();
+
+
+            if (profile == null)
+            {
+                return;
+            }
+
+
+            dailyCalorieGoal =
+                profile.DailyCalorieGoal;
+
+
+            hasCalorieGoal =
+                dailyCalorieGoal > 0;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(
+                $"Kunne ikke hente kalorieprofil: {ex.Message}"
+            );
+        }
+        finally
+        {
+            loadingCalories = false;
+        }
+    }
+
+
+
+    private async Task LoadTodayNutrition()
+    {
+        loadingNutrition = true;
+
+
+        try
+        {
+            var token =
+                await GetToken();
+
+
+            if (token == null)
+            {
+                return;
+            }
+
+
+            var result =
+                await Http.GetFromJsonAsync<
+                    DailyNutritionResponse>(
+                        "api/Nutrition/today"
+                    );
+
+
+            todayNutrition =
+                result ??
+                new DailyNutritionResponse();
+
+
+            // Hvis Nutrition endpointet allerede sender
+            // kaloriemålet bruger vi det som fallback.
+            if (dailyCalorieGoal <= 0 &&
+                todayNutrition.DailyCalorieGoal > 0)
+            {
+                dailyCalorieGoal =
+                    todayNutrition.DailyCalorieGoal;
+
+                hasCalorieGoal =
+                    true;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(
+                $"Kunne ikke hente dagens kost: {ex.Message}"
+            );
+
+
+            todayNutrition =
+                new DailyNutritionResponse();
+        }
+        finally
+        {
+            loadingNutrition = false;
+        }
+    }
+
+
+
+    private string GetApiDayName(
+        DayOfWeek day)
+    {
+        return day switch
+        {
+            DayOfWeek.Monday =>
+                "Mandag",
+
+            DayOfWeek.Tuesday =>
+                "Tirsdag",
+
+            DayOfWeek.Wednesday =>
+                "Onsdag",
+
+            DayOfWeek.Thursday =>
+                "Torsdag",
+
+            DayOfWeek.Friday =>
+                "Fredag",
+
+            DayOfWeek.Saturday =>
+                "Loerdag",
+
+            DayOfWeek.Sunday =>
+                "Soendag",
+
+            _ =>
+                ""
+        };
+    }
+
+
+
+    private string GetDisplayDayName(
+        string dayName)
+    {
+        return dayName switch
+        {
+            "Loerdag" =>
+                "Lørdag",
+
+            "Soendag" =>
+                "Søndag",
+
+            _ =>
+                dayName
+        };
+    }
+
+
+
+    private void OpenTodayTraining()
+    {
+        if (todayTrainingDay == null)
+        {
+            return;
+        }
+
+
+        Navigation.NavigateTo(
+            $"/workout/{todayTrainingDay.Id}"
+        );
+    }
+
+
+
     private void GaaTilTraeningsprogrammer()
     {
         Navigation.NavigateTo(
@@ -283,7 +1032,6 @@
     }
 
 
-    // Sender brugeren til kalorier
     private void GaaTilKalorier()
     {
         Navigation.NavigateTo(
@@ -292,7 +1040,6 @@
     }
 
 
-    // Sender brugeren til kost
     private void GaaTilKost()
     {
         Navigation.NavigateTo(
@@ -301,7 +1048,6 @@
     }
 
 
-    // Sender brugeren til vægt
     private void GaaTilVaegt()
     {
         Navigation.NavigateTo(
@@ -310,7 +1056,6 @@
     }
 
 
-    // Sender brugeren til statistik
     private void GaaTilStatistik()
     {
         Navigation.NavigateTo(
@@ -319,15 +1064,14 @@
     }
 
 
-    // Logger brugeren ud
+
     private void LogUd()
     {
-        // Fjerner JWT-tokenet fra SecureStorage
         SecureStorage.Default.Remove(
             "auth_token"
         );
 
-        // Sender brugeren tilbage til login
+
         Navigation.NavigateTo(
             "/login"
         );
